@@ -23,4 +23,31 @@ public class Doctor extends User{
         availableSlots.get(slot).remove(TimeSlot);
     }
 
+    public List<String> getAvailableSlots(String date){
+        return availableSlots.getOrDefault(date, new ArrayList<>());
+    }
+
+    public void bookappointment(Appointment appointment){
+        String date = appointment.getdate();
+        String timeSlot = appointment.gettimeSlot();
+
+        if(availableSlots.containsKey(date) && availableSlots.containsKey(timeSlot)){
+            appointments.add(appointment);
+            availableSlots.remove(date);
+            System.out.println("Appointment added successfully");
+        }else {
+            System.out.println("Slot not available");
+        }
+    }
+
+    public void viewAppointments(){
+        for(int i = 0; i<appointments.size(); i++){
+            System.out.println(appointments.get(i));
+        }
+    }
+
+
+    public void viewPatientRecord(Patient patient){
+        patient.viewMedicalRecord();
+    }
 }

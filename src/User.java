@@ -5,7 +5,7 @@ public class User{
     private String name;
 
     public User(){
-        passwcoord = "password";
+        password = "password";
     }
 
     public User(String id, String password, String role, String name){
