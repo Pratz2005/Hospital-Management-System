@@ -5,9 +5,9 @@ import java.util.Scanner;
 
 public class Administrator {
 
-    private static final String STAFF_FILE_PATH = "C:/Users/tanya/Downloads/Staff_List.csv";
-    private static final String APPOINTMENT_FILE_PATH = "C:/Users/tanya/Downloads/Appointments.csv";
-    private static final String MEDICINE_FILE_PATH = "C:/Users/tanya/Downloads/Medicine_List.csv"; // Path for the medicine file
+    private static final String STAFF_FILE_PATH = "Staff_List.csv";
+    private static final String APPOINTMENT_FILE_PATH = "Appointments.csv";
+    private static final String MEDICINE_FILE_PATH = "Medicine_List.csv"; 
 
     // Method to manage hospital staff (add, remove, update)
     public void manageHospitalStaff() throws IOException {
