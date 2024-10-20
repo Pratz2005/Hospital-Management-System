@@ -58,6 +58,7 @@ public class Pharmacist extends User{
                     medicine[0] = String.valueOf(currentStock - 1);
                     Appointment.appointmentOutRecord.get(i).setMedStatus(false);
                 }
+                break;
             }
         }
     }
