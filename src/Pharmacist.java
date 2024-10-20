@@ -62,6 +62,9 @@ public class Pharmacist extends User{
         }
     }
 
+    public List<String[]> getMedicineList(){
+        return medicineList;
+    }
 
 
     // Method to get the list of replenishment requests
