@@ -1,11 +1,16 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Pharmacist {
-    private List<String[]> replenishmentRequests = new ArrayList<>(); // Store replenishment requests
+public class Pharmacist extends User{
+    private static List<String[]> replenishmentRequests = new ArrayList<>();// Store replenishment requests
+    private static List<String[]> medicineList;
+
+    public Pharmacist(String id, String password, String role, String name){
+        super(id, password, role, name);
+    }
 
     // Method to submit a replenishment request for low-stock medications
-    public void submitReplenishmentRequest(String medicineName, int requestedQuantity, List<String[]> medicineList) {
+    public void submitReplenishmentRequest(String medicineName, int requestedQuantity) {
         // Check if the medication is low in stock
         boolean medicationFound = false;
         for (String[] medicine : medicineList) {
@@ -31,6 +36,33 @@ public class Pharmacist {
     }
 
     // Other methods...
+    public void dispenseMed(int appointmentID){
+        int i;
+        String medName="";
+        for(i=0; i< Appointment.appointmentOutRecord.size(); i++){
+            if(appointmentID == Appointment.appointmentOutRecord.get(i).getAppointmentID()){
+                medName = Appointment.appointmentOutRecord.get(i).getMedicationName();
+                break;
+            }
+        }
+        for (String[] medicine : medicineList) {
+            if (medicine[0].equalsIgnoreCase(medName)) {
+                int currentStock = Integer.parseInt(medicine[1]); // Assuming second column is Initial Stock
+                int lowStockLevel = Integer.parseInt(medicine[2]); // Assuming third column is Low Stock Level Alert
+
+                // Verify if the current stock is below the low stock level
+                if (currentStock < lowStockLevel) {
+                    submitReplenishmentRequest(medName, currentStock+20);
+                }
+                else{
+                    medicine[0] = String.valueOf(currentStock - 1);
+                    Appointment.appointmentOutRecord.get(i).setMedStatus(false);
+                }
+            }
+        }
+    }
+
+
 
     // Method to get the list of replenishment requests
     public List<String[]> getReplenishmentRequests() {

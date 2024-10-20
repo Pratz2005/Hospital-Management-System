@@ -28,8 +28,8 @@ public class Doctor extends User{
     }
 
     public void bookappointment(Appointment appointment){
-        String date = appointment.getdate();
-        String timeSlot = appointment.gettimeSlot();
+        String date = appointment.getDate();
+        String timeSlot = appointment.getTimeSlot();
 
         if(availableSlots.containsKey(date) && availableSlots.containsKey(timeSlot)){
             appointments.add(appointment);
