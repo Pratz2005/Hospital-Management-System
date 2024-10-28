@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class Appointment {
-    private int appointmentID;
+    private double appointmentID;
     private String doctorId;
     private String patientId;
     private String date;
@@ -17,7 +17,7 @@ public class Appointment {
 
     private static final String APPOINTMENT_FILE_PATH = "Appointments.csv"; // Update this path as needed
 
-    public Appointment(int appointmentID, String doctorId, String patientId, String date, String timeSlot, String status) {
+    public Appointment(double appointmentID, String doctorId, String patientId, String date, String timeSlot, String status) {
         this.appointmentID = appointmentID;
         this.doctorId = doctorId;
         this.patientId = patientId;
@@ -29,6 +29,7 @@ public class Appointment {
         this.medStatus = true;
 
     }
+
 
     public String getDoctorId() {
         return doctorId;
@@ -54,7 +55,7 @@ public class Appointment {
         status = newStatus;
     }
 
-    public int getAppointmentID() {
+    public double getAppointmentID() {
         return appointmentID;
     }
 
@@ -86,8 +87,9 @@ public class Appointment {
         this.medStatus = medStatus;
     }
 
-    public void addToRecord(Appointment a){
+    public void addToRecord(Appointment a) throws IOException {
         appointmentOutRecord.add(a);
+        saveToCSV();
     }
 
     public void removeRecord (Appointment a){

@@ -1,4 +1,6 @@
+import java.io.IOException;
 import java.util.Scanner;
+import java.lang.Math;
 
 public class Patient extends User{
     private String gender;
@@ -35,6 +37,35 @@ public class Patient extends User{
     public void updateEmail(String newEmail){
         this.email = newEmail;
     }
+
+    public void scheduleAppointment () throws IOException {
+        Scanner doctID = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter Doctor ID: ");
+        String doctorID = doctID.nextLine();
+
+        Scanner datein = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter date in dd/mm/yy format: ");
+        String date = datein.nextLine();
+
+        Scanner timeslotin = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter time slot in hh:mm format: ");
+        String timeslot = timeslotin.nextLine();
+
+        double appID = Math.random();
+        String status = "confirmed";
+        Appointment a = new Appointment(appID, doctorID, this.getId(), date, timeslot, status);
+        a.addToRecord(a);
+    }
+
+    public void reschedule(){
+
+        Scanner timeslotin = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter new time slot in hh:mm format: ");
+        String timeslot = timeslotin.nextLine();
+
+
+    }
+
 
 
 }
