@@ -55,6 +55,10 @@ public class Appointment {
         status = newStatus;
     }
 
+    public void setTimeSlot(String newTimeSlot) {
+        timeSlot = newTimeSlot;
+    }
+
     public double getAppointmentID() {
         return appointmentID;
     }

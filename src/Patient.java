@@ -59,13 +59,117 @@ public class Patient extends User{
 
     public void reschedule(){
 
-        Scanner timeslotin = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Enter new time slot in hh:mm format: ");
-        String timeslot = timeslotin.nextLine();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter AppointmentID");
+        double appointmentID = sc.nextDouble();
+        sc.nextLine();
 
+        Appointment appointmentToReschedule = null;
+        for(Appointment appointment : Appointment.appointmentOutRecord){
+            if(appointment.getAppointmentID() == appointmentID){
+                appointmentToReschedule = appointment;
+                break;
+            }
+        }
+
+        if(appointmentToReschedule != null){
+            System.out.println("Enter new time slot in hh:mm format: ");
+            String newTimeSlot = sc.nextLine();
+
+            appointmentToReschedule.setTimeSlot(newTimeSlot);
+
+            appointmentToReschedule.setStatus("rescheduled");
+
+            System.out.println("Appointment Scheduled Successfully");
+
+            try {
+                appointmentToReschedule.saveToCSV();
+            } catch (IOException e) {
+                System.out.println("Error saving appointment: " + e.getMessage());
+            }
+        }else{
+            System.out.println("Appointment ID not found");
+        }
 
     }
 
+    public void cancelAppointment(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter AppointmentID");
+        double appointmentID = sc.nextDouble();
+        sc.nextLine();
+
+        Appointment appointmentToCancel = null;
+        for(Appointment appointment : Appointment.appointmentOutRecord){
+            if(appointment.getAppointmentID() == appointmentID){
+                appointmentToCancel = appointment;
+                break;
+            }
+        }
+
+        if(appointmentToCancel != null){
+            appointmentToCancel.setStatus("cancelled");
+            Appointment.appointmentOutRecord.remove(appointmentToCancel);
+            System.out.println("Appointment Cancelled");
+        }else{
+            System.out.println("Appointment ID not found");
+        }
+    }
+
+    public void viewScheduledAppointments() {
+        boolean hasAppointments = false;
+
+        System.out.println("Scheduled Appointments for " + this.getName() + " (Patient ID: " + this.getId() + "):");
+        System.out.println("----------------------------------------------------");
+
+        for (Appointment appointment : Appointment.appointmentOutRecord) {
+            if (appointment.getPatientId().equals(this.getId()) && !appointment.getStatus().equalsIgnoreCase("cancelled")) {
+                System.out.println("Appointment ID: " + appointment.getAppointmentID());
+                System.out.println("Doctor ID: " + appointment.getDoctorId());
+                System.out.println("Date: " + appointment.getDate());
+                System.out.println("Time Slot: " + appointment.getTimeSlot());
+                System.out.println("Status: " + appointment.getStatus());
+                System.out.println("----------------------------------------------------");
+                hasAppointments = true;
+            }
+        }
+
+        if (!hasAppointments) {
+            System.out.println("No scheduled appointments found.");
+        }
+    }
+
+    public void viewPastRecords() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter Appointment ID to view past record:");
+        double appointmentID = sc.nextDouble();
+        sc.nextLine(); // Consume newline
+
+        boolean recordFound = false;
+
+        for (Appointment appointment : Appointment.appointmentOutRecord) {
+            if (appointment.getAppointmentID() == appointmentID && (appointment.getStatus().equalsIgnoreCase("completed") || appointment.getStatus().equalsIgnoreCase("cancelled"))) {
+                System.out.println("Past Appointment Details:");
+                System.out.println("Appointment ID: " + appointment.getAppointmentID());
+                System.out.println("Doctor ID: " + appointment.getDoctorId());
+                System.out.println("Date: " + appointment.getDate());
+                System.out.println("Time Slot: " + appointment.getTimeSlot());
+                System.out.println("Status: " + appointment.getStatus());
+                System.out.println("Type of Service: " + appointment.getTypeOfService());
+                System.out.println("Medication: " + appointment.getMedicationName());
+                System.out.println("Medication Status: " + (appointment.isMedStatus() ? "Pending" : "Dispensed"));
+                recordFound = true;
+                break;
+            }
+        }
+
+        if (!recordFound) {
+            System.out.println("No past records found for the given Appointment ID.");
+        }
+    }
 
 
+    public void logOut() {
+        System.out.println("Patient " + getName() + " has logged out successfully.");
+    }
 }
