@@ -30,6 +30,8 @@ public class Appointment {
 
     }
 
+    public Appointment(){}
+
 
     public String getDoctorId() {
         return doctorId;

@@ -24,6 +24,7 @@ public class Main{
         switch (option){
             case 1:
                 Patient patient = new Patient(id, password);
+                Appointment app = new Appointment();
 
                 System.out.println("==== Patient Menu ====");
                 System.out.println("(1) View Medical Record\n"
@@ -40,8 +41,47 @@ public class Main{
                     pChoice = sc.nextInt();
                     switch (pChoice) {
                         case 1:
-
+                            patient.viewMedicalRecord();
+                            break;
+                        case 2:
+                            System.out.print("Enter new contact number: ");
+                            String newContact = sc.nextLine();
+                            System.out.print("Enter new email: ");
+                            String newEmail = sc.nextLine();
+                            patient.updateContactNo(newContact);
+                            patient.updateEmail(newEmail);
+                            System.out.println("Contact information updated successfully.");
+                            break;
+                        case 3:
+                            System.out.println("Available appointment slots:");
+                            for (Appointment appt : Appointment.appointmentOutRecord) {
+                                if (appt.getStatus().equals("confirmed")) {
+                                    System.out.println("Doctor ID: " + appt.getDoctorId() + ", Date: " + appt.getDate() + ", Time: " + appt.getTimeSlot());
+                                }
+                            }
+                            break;
+                        case 4:
+                            patient.scheduleAppointment();
+                            break;
+                        case 5:
+                            patient.reschedule();
+                            break;
+                        case 6:
+                            patient.cancelAppointment();
+                            break;
+                        case 7:
+                            patient.viewScheduledAppointments();
+                            break;
+                        case 8:
+                            patient.viewPastRecords();
+                            break;
+                        case 9:
+                            patient.logOut();
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please try again.");
                     }
+
 
                 } while (option == 8);
 
