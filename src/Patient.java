@@ -25,6 +25,10 @@ public class Patient extends User {
         this.pastTreatment = pastTreatment;
     }
 
+    public Patient(String id, String name){
+        super(id, name);
+    }
+
     public void viewMedicalRecord() {
         System.out.println("Name: " + getName());
         System.out.println("Gender: " + gender);
