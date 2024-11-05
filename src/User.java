@@ -15,6 +15,11 @@ public class User{
         this.name = name;
     }
 
+    public User (String id, String name){
+        this.id = id;
+        this.name = name;
+    }
+
     public void setPassword(String pass){
         password = pass;
     }
@@ -36,3 +41,4 @@ public class User{
     }
 
 }
+
