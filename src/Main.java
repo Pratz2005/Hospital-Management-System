@@ -4,7 +4,7 @@ import java.lang.Math;
 
 
 public class Main{
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
         String id, password;
         int option =1;
@@ -34,11 +34,13 @@ public class Main{
                         + "(5) Reschedule Appointment\n"
                         + "(6) Cancel Appointment \n"
                         + "(7) View Scheduled Appointments\n"
-                        + "(8) Logout");
+                        + "(8) View Past Appointment Outcome Records\n"
+                        + "(9) Logout");
                 int pChoice;
                 do {
                     System.out.println("Enter your choice: ");
                     pChoice = sc.nextInt();
+                    sc.nextLine();
                     switch (pChoice) {
                         case 1:
                             patient.viewMedicalRecord();
@@ -61,7 +63,11 @@ public class Main{
                             }
                             break;
                         case 4:
-                            patient.scheduleAppointment();
+                            try {
+                                patient.scheduleAppointment();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                             break;
                         case 5:
                             patient.reschedule();
@@ -83,7 +89,7 @@ public class Main{
                     }
 
 
-                } while (option == 8);
+                } while (option == 9);
 
                 break;
             case 2:

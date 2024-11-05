@@ -175,5 +175,6 @@ public class Patient extends User{
 
     public void logOut() {
         System.out.println("Patient " + getName() + " has logged out successfully.");
+        System.exit(0);
     }
 }
