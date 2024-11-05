@@ -1,10 +1,10 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
 public class Appointment {
-    private double appointmentID;
+    private int appointmentID; // Changed from double to int
     private String doctorId;
     private String patientId;
     private String date;
@@ -12,12 +12,13 @@ public class Appointment {
     private String status;
     private String typeOfService;
     private String medicationName;
-    private boolean medStatus; //true = pending, false = dispensed
-    public static List<Appointment> appointmentOutRecord;
+    private boolean medStatus; // true = pending, false = dispensed
+    private String consultationNotes;
+    public static List<Appointment> appointmentOutRecord = new ArrayList<>(); // Initialized the list
 
     private static final String APPOINTMENT_FILE_PATH = "Appointments.csv"; // Update this path as needed
 
-    public Appointment(double appointmentID, String doctorId, String patientId, String date, String timeSlot, String status) {
+    public Appointment(int appointmentID, String doctorId, String patientId, String date, String timeSlot, String status) {
         this.appointmentID = appointmentID;
         this.doctorId = doctorId;
         this.patientId = patientId;
@@ -27,84 +28,62 @@ public class Appointment {
         this.typeOfService = "n/a";
         this.medicationName = "n/a";
         this.medStatus = true;
-
+        this.consultationNotes = "";
     }
 
+    // Getters and Setters
+    public String getDoctorId() { return doctorId; }
 
-    public String getDoctorId() {
-        return doctorId;
-    }
+    public String getPatientId() { return patientId; }
 
-    public String getPatientId() {
-        return patientId;
-    }
+    public String getDate() { return date; }
 
-    public String getDate() {
-        return date;
-    }
+    public String getTimeSlot() { return timeSlot; }
 
-    public String getTimeSlot() {
-        return timeSlot;
-    }
+    public String getStatus() { return status; }
 
-    public String getStatus() {
-        return status;
-    }
+    public void setStatus(String newStatus) { status = newStatus; }
 
-    public void setStatus(String newStatus) {
-        status = newStatus;
-    }
+    public void setTimeSlot(String newTimeSlot) { timeSlot = newTimeSlot; }
 
-    public void setTimeSlot(String newTimeSlot) {
-        timeSlot = newTimeSlot;
-    }
+    public int getAppointmentID() { return appointmentID; }
+    // Updated return type to int
+    public void setAppointmentID(int appointmentID) { this.appointmentID = appointmentID; }
 
-    public double getAppointmentID() {
-        return appointmentID;
-    }
+    public String getTypeOfService() { return typeOfService; }
 
-    public void setAppointmentID(int appointmentID) {
-        this.appointmentID = appointmentID;
-    }
+    public void setTypeOfService(String typeOfService) { this.typeOfService = typeOfService; }
 
-    public String getTypeOfService() {
-        return typeOfService;
-    }
+    public String getMedicationName() { return medicationName; }
 
-    public void setTypeOfService(String typeOfService) {
-        this.typeOfService = typeOfService;
-    }
+    public void setMedicationName(String medicationName) { this.medicationName = medicationName; }
+    public boolean isMedStatus() { return medStatus; }
 
-    public String getMedicationName() {
-        return medicationName;
-    }
+    public void setMedStatus(boolean medStatus) { this.medStatus = medStatus; }
 
-    public void setMedicationName(String medicationName) {
-        this.medicationName = medicationName;
-    }
+    public String getConsultationNotes() { return consultationNotes; }
 
-    public boolean isMedStatus() {
-        return medStatus;
-    }
+    public void setConsultationNotes(String consultationNotes) { this.consultationNotes = consultationNotes; }
 
-    public void setMedStatus(boolean medStatus) {
-        this.medStatus = medStatus;
-    }
-
-    public void addToRecord(Appointment a) throws IOException {
+    public void addToRecord(Appointment a) {
         appointmentOutRecord.add(a);
-        saveToCSV();
+        try {
+            saveToCSV(); // Handle IOException within this method
+        } catch (IOException e) {
+            System.err.println("Error saving appointment to CSV: " + e.getMessage());
+        }
     }
 
-    public void removeRecord (Appointment a){
+    public void removeRecord(Appointment a) {
         appointmentOutRecord.remove(a);
     }
 
     // Method to save the appointment details to the CSV file
     public void saveToCSV() throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(APPOINTMENT_FILE_PATH, true))) {
-            bw.write(String.join(",", doctorId, patientId, date, timeSlot, status));
-            bw.newLine(); // Add a newline at the end
+            bw.write(String.join(",", String.valueOf(appointmentID), doctorId, patientId, date, timeSlot, status,
+                    typeOfService, medicationName, String.valueOf(medStatus), consultationNotes));
+            bw.newLine();
         }
     }
 }
