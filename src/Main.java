@@ -26,18 +26,19 @@ public class Main{
                 Patient patient = new Patient(id, password);
                 Appointment app = new Appointment();
 
-                System.out.println("==== Patient Menu ====");
-                System.out.println("(1) View Medical Record\n"
-                        + "(2) Update Personal Information\n"
-                        + "(3) View Available Appointment Slots\n"
-                        + "(4) Schedule Appointment\n"
-                        + "(5) Reschedule Appointment\n"
-                        + "(6) Cancel Appointment \n"
-                        + "(7) View Scheduled Appointments\n"
-                        + "(8) View Past Appointment Outcome Records\n"
-                        + "(9) Logout");
+
                 int pChoice;
                 do {
+                    System.out.println("\n==== Patient Menu ====");
+                    System.out.println("(1) View Medical Record\n"
+                            + "(2) Update Personal Information\n"
+                            + "(3) View Available Appointment Slots\n"
+                            + "(4) Schedule Appointment\n"
+                            + "(5) Reschedule Appointment\n"
+                            + "(6) Cancel Appointment \n"
+                            + "(7) View Scheduled Appointments\n"
+                            + "(8) View Past Appointment Outcome Records\n"
+                            + "(9) Logout");
                     System.out.println("Enter your choice: ");
                     pChoice = sc.nextInt();
                     sc.nextLine();
@@ -89,7 +90,7 @@ public class Main{
                     }
 
 
-                } while (option == 9);
+                } while (option != 9);
 
                 break;
             case 2:
@@ -105,12 +106,44 @@ public class Main{
                 break;
 
             case 3:
+                Pharmacist ph = new Pharmacist(id);
                 System.out.println("==== Pharmacist Menu ====");
                 System.out.println("(1) View Appointmnet Outcome Record\n"
                         + "(2) Update Prescription Status\n"
                         + "(3) View Medication Inventory\n"
                         + "(4) Submit Replenishment Request\n"
-                        + "(8) Logout");
+                        + "(5) Logout");
+                int pchoice;
+                System.out.println("Enter your choice: ");
+                pchoice = sc.nextInt();
+                sc.nextLine();
+                switch (pchoice) {
+                    case 1:
+                        //ph.();
+                        break;
+                    case 2:
+                        int appointment = sc.nextInt();
+                        sc.nextLine();
+                        ph.dispenseMed(appointment);
+                        break;
+                    case 3:
+                        ph.getMedicineList();
+                        break;
+                    case 4:
+                        System.out.println("Enter medicine name: ");
+                        String medName = sc.nextLine();
+                        System.out.println("Enter quantity: ");
+                        int quantity = sc.nextInt();
+                        sc.nextLine();
+                        ph.submitReplenishmentRequest(medName, quantity);
+                        break;
+                    case 5:
+                        System.out.println("Logging out...");
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+
                 break;
 
             case 4:

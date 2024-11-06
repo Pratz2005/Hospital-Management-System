@@ -9,6 +9,10 @@ public class Pharmacist extends User{
         super(id, password, role, name);
     }
 
+    public Pharmacist (String id){
+        super(id);
+    }
+
     // Method to submit a replenishment request for low-stock medications
     public void submitReplenishmentRequest(String medicineName, int requestedQuantity) {
         // Check if the medication is low in stock
@@ -53,10 +57,12 @@ public class Pharmacist extends User{
                 // Verify if the current stock is below the low stock level
                 if (currentStock < lowStockLevel) {
                     submitReplenishmentRequest(medName, currentStock+20);
+                    System.out.println("Low stock level, submitting replenishment request.");
                 }
                 else{
                     medicine[0] = String.valueOf(currentStock - 1);
                     Appointment.appointmentOutRecord.get(i).setMedStatus(false);
+                    System.out.println("Medicine dispensed. Status updated!");
                 }
                 break;
             }
