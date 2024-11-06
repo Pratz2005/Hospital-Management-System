@@ -7,7 +7,11 @@ import java.util.Map;
 public class Doctor extends User{
     private Map<String, List<String>> availableSlots; //Mapping date to Available time slots
     private List<Appointment> appointments;
+<<<<<<< Updated upstream
     private List<Patient> patientsUnderCare;
+=======
+    private List<Patient> patients;
+>>>>>>> Stashed changes
 
     public Doctor(String id, String password, String role, String name){
         super(id, password, role, name);
@@ -57,6 +61,7 @@ public class Doctor extends User{
         }
     }
 
+<<<<<<< Updated upstream
     public void addPatient(Patient patient){
         patientsUnderCare.add(patient);
         System.out.println("Patient added successfully.");
@@ -84,5 +89,9 @@ public class Doctor extends User{
 
         // Add the treatment record to the patient's past treatments
         System.out.println("Patient record updated with new treatment entry.");
+=======
+    public void viewPatientRecord(Patient patient){
+        patient.viewMedicalRecord();
+>>>>>>> Stashed changes
     }
 }
