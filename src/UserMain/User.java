@@ -22,6 +22,10 @@ public class User{
         this.name = name;
     }
 
+    public User(String id){
+        this.id = id;
+    }
+
     public void setPassword(String pass){
         password = pass;
     }
