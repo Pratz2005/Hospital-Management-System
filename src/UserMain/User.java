@@ -1,3 +1,5 @@
+package UserMain;
+
 public class User{
     private String id;
     private String password;
@@ -22,6 +24,10 @@ public class User{
 
     public void setPassword(String pass){
         password = pass;
+    }
+
+    public String getPassword(){
+        return password;
     }
 
     public String getId() {

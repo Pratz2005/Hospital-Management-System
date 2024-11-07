@@ -1,3 +1,5 @@
+package UserMain;
+
 import java.io.IOException;
 import java.util.Random;
 import java.util.Scanner;
@@ -26,7 +28,7 @@ public class Patient extends User {
     }
 
     public Patient(String id, String name){
-        super(id, name);
+        super(id,name);
     }
 
     public void viewMedicalRecord() {
@@ -53,10 +55,10 @@ public class Patient extends User {
         String timeSlot;
 
         while (true) {
-            System.out.println("Enter Doctor ID: ");
+            System.out.println("Enter UserMain.Doctor ID: ");
             doctorID = scanner.nextLine();
             if (doctorID.isEmpty()) {
-                System.out.println("Doctor ID cannot be empty. Please enter a valid Doctor ID.");
+                System.out.println("UserMain.Doctor ID cannot be empty. Please enter a valid UserMain.Doctor ID.");
                 continue;
             }
             break;
@@ -107,7 +109,7 @@ public class Patient extends User {
     }
 
     public void reschedule() {
-        System.out.println("Enter Appointment ID: ");
+        System.out.println("Enter UserMain.Appointment ID: ");
         String appointmentID = scanner.nextLine();
 
         Appointment appointmentToReschedule = findAppointmentById(appointmentID);
@@ -119,7 +121,7 @@ public class Patient extends User {
             appointmentToReschedule.setTimeSlot(newTimeSlot);
             appointmentToReschedule.setStatus("rescheduled");
 
-            System.out.println("Appointment Rescheduled Successfully");
+            System.out.println("UserMain.Appointment Rescheduled Successfully");
 
             try {
                 appointmentToReschedule.saveToCSV();
@@ -127,12 +129,12 @@ public class Patient extends User {
                 System.out.println("Error saving appointment: " + e.getMessage());
             }
         } else {
-            System.out.println("Appointment ID not found. Please check and try again.");
+            System.out.println("UserMain.Appointment ID not found. Please check and try again.");
         }
     }
 
     public void cancelAppointment() {
-        System.out.println("Enter Appointment ID: ");
+        System.out.println("Enter UserMain.Appointment ID: ");
         String appointmentID = scanner.nextLine();
 
         Appointment appointmentToCancel = findAppointmentById(appointmentID);
@@ -140,22 +142,22 @@ public class Patient extends User {
         if (appointmentToCancel != null) {
             appointmentToCancel.setStatus("cancelled");
             Appointment.appointmentOutRecord.remove(appointmentToCancel);
-            System.out.println("Appointment Cancelled");
+            System.out.println("UserMain.Appointment Cancelled");
         } else {
-            System.out.println("Appointment ID not found. Please check and try again.");
+            System.out.println("UserMain.Appointment ID not found. Please check and try again.");
         }
     }
 
     public void viewScheduledAppointments() {
         boolean hasAppointments = false;
 
-        System.out.println("Scheduled Appointments for " + this.getName() + " (Patient ID: " + this.getId() + "):");
+        System.out.println("Scheduled Appointments for " + this.getName() + " (UserMain.Patient ID: " + this.getId() + "):");
         System.out.println("----------------------------------------------------");
 
         for (Appointment appointment : Appointment.appointmentOutRecord) {
             if (appointment.getPatientId().equals(this.getId()) && !appointment.getStatus().equalsIgnoreCase("cancelled")) {
-                System.out.println("Appointment ID: " + appointment.getAppointmentID());
-                System.out.println("Doctor ID: " + appointment.getDoctorId());
+                System.out.println("UserMain.Appointment ID: " + appointment.getAppointmentID());
+                System.out.println("UserMain.Doctor ID: " + appointment.getDoctorId());
                 System.out.println("Date: " + appointment.getDate());
                 System.out.println("Time Slot: " + appointment.getTimeSlot());
                 System.out.println("Status: " + appointment.getStatus());
@@ -170,15 +172,15 @@ public class Patient extends User {
     }
 
     public void viewPastRecords() {
-        System.out.println("Enter Appointment ID to view past record: ");
+        System.out.println("Enter UserMain.Appointment ID to view past record: ");
         String appointmentID = scanner.nextLine();
 
         Appointment appointment = findAppointmentById(appointmentID);
 
         if (appointment != null && (appointment.getStatus().equalsIgnoreCase("completed") || appointment.getStatus().equalsIgnoreCase("cancelled"))) {
-            System.out.println("Past Appointment Details:");
-            System.out.println("Appointment ID: " + appointment.getAppointmentID());
-            System.out.println("Doctor ID: " + appointment.getDoctorId());
+            System.out.println("Past UserMain.Appointment Details:");
+            System.out.println("UserMain.Appointment ID: " + appointment.getAppointmentID());
+            System.out.println("UserMain.Doctor ID: " + appointment.getDoctorId());
             System.out.println("Date: " + appointment.getDate());
             System.out.println("Time Slot: " + appointment.getTimeSlot());
             System.out.println("Status: " + appointment.getStatus());
@@ -186,7 +188,7 @@ public class Patient extends User {
             System.out.println("Medication: " + appointment.getMedicationName());
             System.out.println("Medication Status: " + (appointment.isMedStatus() ? "Pending" : "Dispensed"));
         } else {
-            System.out.println("No past records found for the given Appointment ID.");
+            System.out.println("No past records found for the given UserMain.Appointment ID.");
         }
     }
 
@@ -200,6 +202,6 @@ public class Patient extends User {
     }
 
     public void logOut() {
-        System.out.println("Patient " + getName() + " has logged out successfully.");
+        System.out.println("UserMain.Patient " + getName() + " has logged out successfully.");
     }
 }

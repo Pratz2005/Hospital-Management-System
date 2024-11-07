@@ -1,3 +1,5 @@
+package UserMain;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,14 +88,14 @@ public class Administrator {
             String line;
             boolean isFirstLine = true; // Skip the header
 
-            System.out.println("Appointment Details:");
+            System.out.println("UserMain.Appointment Details:");
             while ((line = br.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue; // Skip the header
                 }
                 String[] appointmentDetails = line.split(",");
-                System.out.printf("Patient ID: %s, Doctor ID: %s, Date: %s, Time Slot: %s, Status: %s%n",
+                System.out.printf("UserMain.Patient ID: %s, UserMain.Doctor ID: %s, Date: %s, Time Slot: %s, Status: %s%n",
                         appointmentDetails[1], appointmentDetails[0], appointmentDetails[2],
                         appointmentDetails[3], appointmentDetails[4]);
             }

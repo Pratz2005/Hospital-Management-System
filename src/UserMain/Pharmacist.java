@@ -1,7 +1,9 @@
+package UserMain;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Pharmacist extends User{
+public class Pharmacist extends User {
     private static List<String[]> replenishmentRequests = new ArrayList<>();// Store replenishment requests
     private static List<String[]> medicineList;
 
