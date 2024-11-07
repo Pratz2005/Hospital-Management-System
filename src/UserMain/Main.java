@@ -27,55 +27,58 @@ public class Main {
         Object user = null; // To hold the user object (UserMain.Patient, UserMain.Doctor, etc.)
 
         // Path to the UserMain.User.csv file
-        String filePath = "C:\\Users\\USER\\Downloads\\User.csv";
+        String filePath = "/Files/User.csv";
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (InputStream is = Main.class.getResourceAsStream(filePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+
             String line;
             // Skip header
             br.readLine();
 
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
+                String[] data = line.split("\\s+");
                 String userId = data[0];
                 String userPassword = data[1];
                 role = data[2];
-                name=data[3];
+                name = data[3];
 
                 // Check if the entered ID and password match
                 if (userId.equals(id) && userPassword.equals(password)) {
                     authenticated = true;
                     // Create the user object based on the role
-                    if (role.equals("patient"))
-                    {
-                        String filePath_1 = "C:\\Users\\USER\\Downloads\\Patient_List.csv"; // path to your CSV file
-                        try (BufferedReader br_1 = new BufferedReader(new FileReader(filePath_1))) {
-                            String line_1;
-                            // Skip the header line if present
-                            br_1.readLine();
+                    if (role.equals("patient")) {
+                        String patientFilePath = "/Files/Patient_List.csv";
+                        try (InputStream isPatient = Main.class.getResourceAsStream(patientFilePath);
+                             BufferedReader brPatient = new BufferedReader(new InputStreamReader(isPatient))) {
 
-                            while ((line_1 = br_1.readLine()) != null) {
-                                String[] data_1 = line_1.split(",");
+                            String linePatient;
+                            // Skip the header line if present
+                            brPatient.readLine();
+
+                            while ((linePatient = brPatient.readLine()) != null) {
+                                String[] dataPatient = linePatient.split("\\s+");
 
                                 // Assign values based on column order in CSV file
-                                String patientId = data_1[0];
-                                String patientPassword = data_1[1];
-                                String name_1 = data_1[2];
-                                String gender = data_1[3];
-                                String dob = data_1[4];
-                                String contactNo = data_1[5];
-                                String email = data_1[6];
-                                String bloodType = data_1[7];
-                                String pastTreatment = data_1[8];
+                                String patientId = dataPatient[0];
+                                String patientPassword = dataPatient[1];
+                                String name_1 = dataPatient[2];
+                                String gender = dataPatient[3];
+                                String dob = dataPatient[4];
+                                String contactNo = dataPatient[5];
+                                String email = dataPatient[6];
+                                String bloodType = dataPatient[7];
+                                String pastTreatment = dataPatient[8];
 
                                 user = new Patient(patientId, patientPassword, role, name_1, gender, dob, contactNo, email, bloodType, pastTreatment);
                             }
-                        }    // Create UserMain.Patient object
-                    }else if(role.equals("Doctor")) {
-                        user = new Doctor(id, password, role,name); // Create UserMain.Doctor object
+                        }
+                    } else if (role.equals("Doctor")) {
+                        user = new Doctor(id, password, role, name);
                     } else if (role.equals("Pharmacist")) {
-                        user = new Pharmacist(id, password, role, name); // Create UserMain.Pharmacist object
+                        user = new Pharmacist(id, password, role, name);
                     } else if (role.equals("Administrator")) {
-                        user = new Administrator(); // Create UserMain.Administrator object
+                        user = new Administrator();
                     }
                     break;
                 }
