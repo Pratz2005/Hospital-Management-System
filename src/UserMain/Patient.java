@@ -1,6 +1,9 @@
 package UserMain;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -12,7 +15,12 @@ public class Patient extends User {
     private String contactNo;
     private String email;
     private String bloodType;
-    private String pastTreatment;
+
+     // Medical records
+    private List<String> diagnoses;
+    private List<String> prescriptions;
+    private HashMap<String, String> treatmentHistory; // Keyed by appointment ID or date
+
 
     private static final Scanner scanner = new Scanner(System.in);
 
@@ -24,21 +32,36 @@ public class Patient extends User {
         this.contactNo = contactNo;
         this.email = email;
         this.bloodType = bloodType;
-        this.pastTreatment = pastTreatment;
+        this.diagnoses = new ArrayList<>();
+        this.prescriptions = new ArrayList<>();
+        this.treatmentHistory = new HashMap<>();
     }
 
     public Patient(String id, String name){
         super(id,name);
     }
 
-    public void viewMedicalRecord() {
+    // Previously viewMedicalRecord. But more Suited for Patient info.
+    public void viewPatientInfo() {
         System.out.println("Name: " + getName());
         System.out.println("Gender: " + gender);
         System.out.println("DOB: " + dob);
         System.out.println("Contact No: " + contactNo);
         System.out.println("Email: " + email);
         System.out.println("Blood Type: " + bloodType);
-        System.out.println("Past Treatment: " + pastTreatment);
+    }
+
+    // Getters idk if reduntant. Get rid of them if they are of no use
+    public String getDoB() {
+        return dob;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getBloodType() {
+        return bloodType;
     }
 
     public void updateContactNo(String newContactNo) {
@@ -49,6 +72,32 @@ public class Patient extends User {
         this.email = newEmail;
     }
 
+    // Methods to view medical history
+    public List<String> getDiagnoses() {
+        return new ArrayList<>(diagnoses); // Return a copy for immutability
+    }
+
+    public List<String> getPrescriptions() {
+        return new ArrayList<>(prescriptions);
+    }
+
+    public HashMap<String, String> getTreatmentHistory() {
+        return new HashMap<>(treatmentHistory);
+    }
+
+    // Methods for Doctor to update medical records
+    public void addDiagnosis(String diagnosis) {
+        diagnoses.add(diagnosis);
+    }
+
+    public void addPrescription(String prescription) {
+        prescriptions.add(prescription);
+    }
+
+    public void addTreatment(String appointmentId, String treatmentDetails) {
+        treatmentHistory.put(appointmentId, treatmentDetails);
+    }
+    
     public void scheduleAppointment() throws IOException {
         String doctorID;
         String date;

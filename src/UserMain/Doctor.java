@@ -7,13 +7,28 @@ import java.util.Map;
 
 
 public class Doctor extends User {
-    private Map<String, List<String>> availableSlots; //Mapping date to Available time slots
+    private String specialization;
     private List<Appointment> appointments;
+    private Map<String, List<String>> availableSlots; //Mapping date to Available time slots
+    private HashMap<String, Patient> patientRecords;
 
     public Doctor(String id, String password, String role, String name){
         super(id, password, role, name);
+        this.specialization = specialization;
         this.availableSlots = new HashMap<>();
         this.appointments = new ArrayList<>();
+        this.patientRecords = new HashMap<>();
+    }
+
+     // Method to view upcoming appointments. Extra Feature??
+     public List<Appointment> viewUpcomingAppointments() {
+        List<Appointment> upcomingAppointments = new ArrayList<>();
+        for (Appointment appointment : appointments) {
+            if (appointment.getStatus() != ) {
+                upcomingAppointments.add(appointment);
+            }
+        }
+        return upcomingAppointments;
     }
 
     public void addAvailableSlot(String slot, String TimeSlot){
@@ -49,7 +64,21 @@ public class Doctor extends User {
     }
 
 
-    public void viewPatientRecord(Patient patient){
-        patient.viewMedicalRecord();
+    // Method to view medical records of a specific patient
+    public Patient viewPatientRecord(String patientId) {
+        return patientRecords.get(patientId);
+    }
+
+    // Method to update medical records by adding new diagnosis, prescription, or treatment plan
+    public void updatePatientRecord(String patientId, String diagnosis, String prescription, String treatment, String appointmentId) {
+        Patient patient = patientRecords.get(patientId);
+        if (patient != null) {
+            patient.addDiagnosis(diagnosis);
+            patient.addPrescription(prescription);
+            patient.addTreatment(appointmentId,treatment);
+            System.out.println("Updated medical record for patient " + patientId);
+        } else {
+            System.out.println("Patient record not found.");
+        }
     }
 }
