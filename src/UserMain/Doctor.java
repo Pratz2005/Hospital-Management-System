@@ -24,7 +24,7 @@ public class Doctor extends User {
      public List<Appointment> viewUpcomingAppointments() {
         List<Appointment> upcomingAppointments = new ArrayList<>();
         for (Appointment appointment : appointments) {
-            if (appointment.getStatus() != ) {
+            if (appointment.getStatus().equals("confirmed")) {
                 upcomingAppointments.add(appointment);
             }
         }
