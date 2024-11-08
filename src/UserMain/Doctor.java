@@ -14,7 +14,7 @@ public class Doctor extends User {
 
     public Doctor(String id, String password, String role, String name){
         super(id, password, role, name);
-        this.specialization = specialization;
+        this.specialization = specialization; 
         this.availableSlots = new HashMap<>();
         this.appointments = new ArrayList<>();
         this.patientRecords = new HashMap<>();

@@ -11,10 +11,11 @@ public class Appointment {
     private String patientId;
     private String date;
     private String timeSlot;
-    private String status;
+    private String status; // e.g., "pending", "confirmed", "canceled", "completed"
     private String typeOfService;
     private String medicationName;
     private boolean medStatus; //true = pending, false = dispensed
+    private String doctorNotes;
     public static List<Appointment> appointmentOutRecord;
 
     private static final String APPOINTMENT_FILE_PATH = "Appointments.csv"; // Update this path as needed
@@ -25,14 +26,14 @@ public class Appointment {
         this.patientId = patientId;
         this.date = date;
         this.timeSlot = timeSlot;
-        this.status = status;
+        this.status = "pending"; //default
         this.typeOfService = "n/a";
         this.medicationName = "n/a";
         this.medStatus = true;
 
     }
 
-
+    //Getters
     public String getDoctorId() {
         return doctorId;
     }
@@ -65,20 +66,22 @@ public class Appointment {
         return appointmentID;
     }
 
-    public void setAppointmentID(int appointmentID) {
-        this.appointmentID = appointmentID;
+    public String getMedicationName() {
+        return medicationName;
     }
+
+    //Setters
 
     public String getTypeOfService() {
         return typeOfService;
     }
 
-    public void setTypeOfService(String typeOfService) {
-        this.typeOfService = typeOfService;
+    public void setAppointmentID(int appointmentID) {
+        this.appointmentID = appointmentID;
     }
 
-    public String getMedicationName() {
-        return medicationName;
+    public void setTypeOfService(String typeOfService) {
+        this.typeOfService = typeOfService;
     }
 
     public void setMedicationName(String medicationName) {
@@ -102,10 +105,22 @@ public class Appointment {
         appointmentOutRecord.remove(a);
     }
 
+    // Method to reschedule the appointment (if required)
+    public void reschedule(String newDate, String newTime) {
+        this.date = newDate;
+        this.timeSlot = newTime;
+        this.status = "rescheduled";
+    }
+
+    // Additional method to cancel the appointment
+    public void cancel() {
+        this.status = "canceled";
+    }
+
     // Method to save the appointment details to the CSV file
     public void saveToCSV() throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(APPOINTMENT_FILE_PATH, true))) {
-            bw.write(String.join(",", doctorId, patientId, date, timeSlot, status));
+            bw.write(String.join(",", doctorId, patientId, date, timeSlot, doctorNotes,status));
             bw.newLine(); // Add a newline at the end
         }
     }
