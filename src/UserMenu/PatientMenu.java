@@ -31,17 +31,12 @@ public class PatientMenu extends AbstractMenu {
             switch (choice) {
                 case 1:
                     // Call the corresponding method (view medical record)
-                    patient.viewPatientInfo(); // Assuming you have a UserMain.Patient object
+                    // patient.viewMedicalRecord(); // Assuming you have a UserMain.Patient object
                     System.out.println("P1");
                     break;
                 case 2:
-                    System.out.print("Enter new contact number: ");
-                    String newContact = sc.nextLine();
-                    System.out.print("Enter new email: ");
-                    String newEmail = sc.nextLine();
-                    patient.updateContactNo(newContact);
-                    patient.updateEmail(newEmail);
-                    System.out.println("Contact information updated successfully.");
+                    // Update personal information logic
+                    System.out.println("P2");
                     break;
                 case 3:
                     // View available appointment slots logic

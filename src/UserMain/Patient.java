@@ -295,7 +295,7 @@ public class Patient extends User {
         try (BufferedReader br = new BufferedReader(new FileReader("doctor_availability.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
+                String[] values = line.split("\\s+");
                 if (values.length == 3 && values[1].equals(date)) {
                     availableSlots.add(values[2]); // Add only the slot for the specified date
                 }
