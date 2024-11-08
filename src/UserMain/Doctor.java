@@ -76,7 +76,7 @@ public class Doctor extends User {
             patient.addDiagnosis(diagnosis);
             patient.addPrescription(prescription);
             patient.addTreatment(appointmentId,treatment);
-            System.out.println("Updated medical record for patient " + patientId);
+            System.out.println("Updated medical record for patient " + patientId + "for Appointment" + appointmentId);
         } else {
             System.out.println("Patient record not found.");
         }
