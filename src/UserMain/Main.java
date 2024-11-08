@@ -7,7 +7,8 @@ import UserMenu.DoctorMenu;
 import UserMenu.PharmacistMenu;
 import UserMenu.AdministratorMenu;
 import UserMenu.AbstractMenu;
-
+import Appointment.AppointmentService;
+import Appointment.DoctorAvailabilityService;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -37,7 +38,7 @@ public class Main {
             br.readLine();
 
             while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\s+");
+                String[] data = line.split(",");
                 String userId = data[0];
                 String userPassword = data[1];
                 role = data[2];
@@ -57,24 +58,31 @@ public class Main {
                             brPatient.readLine();
 
                             while ((linePatient = brPatient.readLine()) != null) {
-                                String[] dataPatient = linePatient.split("\\s+");
+                                String[] dataPatient = linePatient.split(",");
 
                                 // Assign values based on column order in CSV file
                                 String patientId = dataPatient[0];
                                 String patientPassword = dataPatient[1];
                                 String name_1 = dataPatient[2];
-                                String gender = dataPatient[3];
-                                String dob = dataPatient[4];
+                                String gender = dataPatient[4];
+                                String dob = dataPatient[3];
                                 String contactNo = dataPatient[5];
                                 String email = dataPatient[6];
                                 String bloodType = dataPatient[7];
                                 String pastTreatment = dataPatient[8];
 
-                                user = new Patient(patientId, patientPassword, role, name_1, gender, dob, contactNo, email, bloodType, pastTreatment);
+                                AppointmentService appointmentService = new AppointmentService();
+                                DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
+
+                                user = new Patient(patientId, patientPassword, role, name_1, gender, dob, contactNo, email, bloodType, pastTreatment,appointmentService,doctorAvailabilityService);
                             }
                         }
                     } else if (role.equals("Doctor")) {
-                        user = new Doctor(id, password, role, name);
+                        // Instantiate AppointmentService and DoctorAvailabilityService for Doctor
+                        AppointmentService appointmentService = new AppointmentService();
+                        DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
+
+                        user = new Doctor(id,password,role, name, appointmentService, doctorAvailabilityService);
                     } else if (role.equals("Pharmacist")) {
                         user = new Pharmacist(id, password, role, name);
                     } else if (role.equals("Administrator")) {

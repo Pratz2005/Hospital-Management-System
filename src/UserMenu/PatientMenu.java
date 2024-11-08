@@ -1,12 +1,15 @@
 package UserMenu;
 import UserMain.Patient;
+import java.util.Scanner;
 
 public class PatientMenu extends AbstractMenu {
     private Patient patient;
+    private Scanner sc;
 
     // Constructor to accept the patient object
     public PatientMenu(Patient patient) {
         this.patient = patient;
+        this.sc = new Scanner(System.in);
     }
 
     @Override
@@ -30,37 +33,28 @@ public class PatientMenu extends AbstractMenu {
 
             switch (choice) {
                 case 1:
-                    // Call the corresponding method (view medical record)
-                    // patient.viewMedicalRecord(); // Assuming you have a UserMain.Patient object
-                    System.out.println("P1");
+                    patient.viewMedicalRecord();
                     break;
                 case 2:
-                    // Update personal information logic
-                    System.out.println("P2");
+                    updatePersonalInformation();
                     break;
                 case 3:
-                    // View available appointment slots logic
-                    System.out.println("P3");
+                    viewAvailableAppointmentSlots();
                     break;
                 case 4:
-                    // Schedule an appointment logic
-                    System.out.println("P4");
+                    scheduleAppointment();
                     break;
                 case 5:
-                    // Reschedule an appointment logic
-                    System.out.println("P5");
+                    rescheduleAppointment();
                     break;
                 case 6:
-                    // Cancel appointment logic
-                    System.out.println("P6");
+                    cancelAppointment();
                     break;
                 case 7:
-                    // View scheduled appointments logic
-                    System.out.println("P7");
+                    viewScheduledAppointments();
                     break;
                 case 8:
-                    // View past appointment outcome records logic
-                    System.out.println("P8");
+                    patient.viewPastAppointmentOutcome();
                     break;
                 case 9:
                     System.out.println("Logging out...");
@@ -69,5 +63,53 @@ public class PatientMenu extends AbstractMenu {
                     System.out.println("Invalid choice. Please try again.");
             }
         } while (choice != 9); // Repeat until logout
+    }
+
+    private void updatePersonalInformation() {
+        System.out.print("Enter new email: ");
+        String newEmail = sc.nextLine();
+        System.out.print("Enter new contact number: ");
+        String newContactNo = sc.nextLine();
+        patient.updatePersonalInfo(newEmail, newContactNo);
+    }
+
+    private void viewAvailableAppointmentSlots() {
+        System.out.print("Enter Doctor ID: ");
+        String doctorID = sc.nextLine();
+        System.out.print("Enter date (e.g., YYYY-MM-DD): ");
+        String date = sc.nextLine();
+        patient.viewAvailableAppointmentSlots(doctorID, date);
+    }
+
+    private void scheduleAppointment() {
+        System.out.print("Enter Doctor ID: ");
+        String doctorID = sc.nextLine();
+        System.out.print("Enter date (e.g., YYYY-MM-DD): ");
+        String date = sc.nextLine();
+        System.out.print("Enter time slot (e.g., 09:00): ");
+        String timeSlot = sc.nextLine();
+        patient.scheduleAppointment(doctorID, date, timeSlot);
+    }
+
+    private void rescheduleAppointment() {
+        System.out.print("Enter Appointment ID to reschedule: ");
+        String appointmentID = sc.nextLine();
+        System.out.print("Enter new date (e.g., YYYY-MM-DD): ");
+        String newDate = sc.nextLine();
+        System.out.print("Enter new time slot (e.g., 09:00): ");
+        String newTimeSlot = sc.nextLine();
+        patient.rescheduleAppointment(appointmentID, newDate, newTimeSlot);
+    }
+
+    private void cancelAppointment() {
+        System.out.print("Enter Appointment ID to cancel: ");
+        String appointmentID = sc.nextLine();
+        patient.cancelAppointment(appointmentID);
+    }
+
+    private void viewScheduledAppointments() {
+        System.out.print("Enter Appointment ID to view status: ");
+        String appointmentID = sc.nextLine();
+        patient.viewScheduledAppointments(appointmentID);
     }
 }

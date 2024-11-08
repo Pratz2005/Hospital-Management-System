@@ -1,0 +1,2 @@
+appointmentID,doctorID,patientID,date,timeSlot,status
+9e9e5a21-bc16-43f3-9d9f-79cca3fd2b84,D001,P1003,2024-12-01,9:00,pending

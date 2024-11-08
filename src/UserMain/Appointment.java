@@ -19,7 +19,7 @@ public class Appointment {
     private String treatmentDetails; // Added to link treatments with specific appointments
     public static List<Appointment> appointmentOutRecord;
 
-    private static final String APPOINTMENT_FILE_PATH = "Appointments.csv"; // Update this path as needed
+    private static final String APPOINTMENT_FILE_PATH = "/Files/Appointments.csv"; // Update this path as needed
 
     public Appointment(double appointmentID, String doctorId, String patientId, String date, String timeSlot, String status) {
         this.appointmentID = appointmentID;

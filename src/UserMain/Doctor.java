@@ -1,84 +1,193 @@
 package UserMain;
 
+import Appointment.AppointmentManager;
+import Appointment.DoctorAvailabilityManager;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 
 public class Doctor extends User {
-    private String specialization;
-    private List<Appointment> appointments;
-    private Map<String, List<String>> availableSlots; //Mapping date to Available time slots
-    private HashMap<String, Patient> patientRecords;
+    private String doctorID;
+    private AppointmentManager appointmentManager;
+    private DoctorAvailabilityManager availabilityManager;
 
-    public Doctor(String id, String password, String role, String name){
-        super(id, password, role, name);
-        this.specialization = specialization; 
-        this.availableSlots = new HashMap<>();
-        this.appointments = new ArrayList<>();
-        this.patientRecords = new HashMap<>();
+    private static final String APPOINTMENT_FILE = "src/Files/Appointment.csv";
+    private static final String APPOINTMENT_RECORD_FILE = "src/Files/AppointmentRecord.csv";
+
+    public Doctor(String doctorID, String password, String role, String name, AppointmentManager appointmentManager, DoctorAvailabilityManager availabilityManager) {
+        super(doctorID, password, role, name); // Call the User constructor to initialize ID, password, role, and name
+        this.doctorID = doctorID;
+        this.appointmentManager = appointmentManager;
+        this.availabilityManager = availabilityManager;
     }
 
-     // Method to view upcoming appointments. Extra Feature??
-     public List<Appointment> viewUpcomingAppointments() {
-        List<Appointment> upcomingAppointments = new ArrayList<>();
-        for (Appointment appointment : appointments) {
-            if (appointment.getStatus().equals("confirmed")) {
-                upcomingAppointments.add(appointment);
+    public void viewPatientMedicalRecord(Patient patient) {
+        patient.viewMedicalRecord();
+    }
+
+    public void updatePatientMedicalRecord(String appointmentID, String newDiagnosis, String newPrescription, int newPrescriptionQuantity, String newTreatmentPlan, String newConsultationNotes) {
+        List<String[]> records = loadAppointmentRecords();
+        boolean updated = false;
+
+        for (String[] record : records) {
+            if (record[0].equals(appointmentID)) {
+                record[1] = newDiagnosis;
+                record[2] = newPrescription;
+                record[3] = String.valueOf(newPrescriptionQuantity);
+                record[5] = newTreatmentPlan;
+                record[8] = newConsultationNotes;
+                updated = true;
+                break;
             }
         }
-        return upcomingAppointments;
-    }
 
-    public void addAvailableSlot(String slot, String TimeSlot){
-        availableSlots.putIfAbsent(slot, new ArrayList<>());
-        availableSlots.get(slot).add(TimeSlot);
-    }
-
-    public void removeAvailableSlot(String slot, String TimeSlot){
-        availableSlots.get(slot).remove(TimeSlot);
-    }
-
-    public List<String> getAvailableSlots(String date){
-        return availableSlots.getOrDefault(date, new ArrayList<>());
-    }
-
-    public void bookappointment(Appointment appointment){
-        String date = appointment.getDate();
-        String timeSlot = appointment.getTimeSlot();
-
-        if(availableSlots.containsKey(date) && availableSlots.containsKey(timeSlot)){
-            appointments.add(appointment);
-            availableSlots.remove(date);
-            System.out.println("UserMain.Appointment added successfully");
-        }else {
-            System.out.println("Slot not available");
-        }
-    }
-
-    public void viewAppointments(){
-        for(int i = 0; i<appointments.size(); i++){
-            System.out.println(appointments.get(i));
-        }
-    }
-
-
-    // Method to view medical records of a specific patient
-    public Patient viewPatientRecord(String patientId) {
-        return patientRecords.get(patientId);
-    }
-
-    // Method to update medical records by adding new diagnosis, prescription, or treatment plan
-    public void updatePatientRecord(String patientId, String diagnosis, String prescription, String treatment, String appointmentId) {
-        Patient patient = patientRecords.get(patientId);
-        if (patient != null) {
-            patient.addDiagnosis(diagnosis);
-            patient.addPrescription(prescription);
-            patient.addTreatment(appointmentId,treatment);
-            System.out.println("Updated medical record for patient " + patientId + "for Appointment" + appointmentId);
+        if (updated) {
+            saveAppointmentRecords(records);
+            System.out.println("Patient medical record updated successfully.");
         } else {
-            System.out.println("Patient record not found.");
+            System.out.println("Appointment ID not found.");
+        }
+    }
+
+    public void viewPersonalSchedule(String date) {
+        String[] availableSlots = availabilityManager.viewDoctorAvailability(doctorID, date);
+        System.out.println("Available Slots:");
+        for (String slot : availableSlots) {
+            System.out.println(slot);
+        }
+    }
+
+    public void setAvailability(String date, String[] availableSlots) {
+        availabilityManager.setDoctorAvailability(doctorID, getName(), date, availableSlots);
+        System.out.println("Availability set successfully.");
+    }
+
+    public void acceptAppointment(String appointmentID) {
+        updateAppointmentStatus(appointmentID, "confirmed");
+    }
+
+    public void declineAppointment(String appointmentID) {
+        updateAppointmentStatus(appointmentID, "canceled");
+    }
+
+    public void viewUpcomingAppointments() {
+        System.out.println("Upcoming Appointments for Doctor ID: " + doctorID);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
+            String line;
+            boolean hasAppointments = false;
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                if (fields[1].equals(doctorID) && fields[5].equals("confirmed")) {
+                    hasAppointments = true;
+                    System.out.println("Appointment ID: " + fields[0]);
+                    System.out.println("Patient ID: " + fields[2]);
+                    System.out.println("Date: " + fields[3]);
+                    System.out.println("Time Slot: " + fields[4]);
+                    System.out.println("Status: " + fields[5]);
+                    System.out.println("-------------------------");
+                }
+            }
+
+            if (!hasAppointments) {
+                System.out.println("No upcoming confirmed appointments found for this doctor.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+        }
+    }
+
+    public void recordAppointmentOutcome(String appointmentID, String diagnosis, String prescriptionMedicine, int quantity, String treatmentPlan, String date, String typeOfService, String notes) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_RECORD_FILE, true))) {
+            String line = String.join(",",
+                    appointmentID,
+                    diagnosis,
+                    prescriptionMedicine,
+                    String.valueOf(quantity),
+                    "pending", // Prescription status initially set to "pending"
+                    treatmentPlan,
+                    date,
+                    typeOfService,
+                    notes
+            );
+            writer.write(line);
+            writer.newLine();
+            System.out.println("Appointment outcome recorded successfully.");
+        } catch (IOException e) {
+            System.err.println("Error writing to AppointmentRecord.csv: " + e.getMessage());
+        }
+
+        // Update the appointment status to "completed" in Appointment.csv
+        updateAppointmentStatus(appointmentID, "completed");
+    }
+
+    private void updateAppointmentStatus(String appointmentID, String newStatus) {
+        List<String[]> appointments = loadAppointments();
+        boolean updated = false;
+
+        for (String[] appointment : appointments) {
+            if (appointment[0].equals(appointmentID)) {
+                appointment[5] = newStatus;
+                updated = true;
+                break;
+            }
+        }
+
+        if (updated) {
+            saveAppointments(appointments);
+            System.out.println("Appointment status updated to " + newStatus + " for Appointment ID: " + appointmentID);
+        } else {
+            System.out.println("Appointment ID not found.");
+        }
+    }
+
+    private List<String[]> loadAppointments() {
+        List<String[]> appointments = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                appointments.add(line.split(","));
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+        }
+        return appointments;
+    }
+
+    private void saveAppointments(List<String[]> appointments) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_FILE))) {
+            for (String[] appointment : appointments) {
+                writer.write(String.join(",", appointment));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing to Appointment.csv: " + e.getMessage());
+        }
+    }
+
+    private List<String[]> loadAppointmentRecords() {
+        List<String[]> records = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_RECORD_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                records.add(line.split(","));
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading AppointmentRecord.csv: " + e.getMessage());
+        }
+        return records;
+    }
+
+    private void saveAppointmentRecords(List<String[]> records) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_RECORD_FILE))) {
+            for (String[] record : records) {
+                writer.write(String.join("\t", record));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing to AppointmentRecord.csv: " + e.getMessage());
         }
     }
 }
