@@ -16,6 +16,7 @@ public class Appointment {
     private String medicationName;
     private boolean medStatus; //true = pending, false = dispensed
     private String doctorNotes;
+    private String treatmentDetails; // Added to link treatments with specific appointments
     public static List<Appointment> appointmentOutRecord;
 
     private static final String APPOINTMENT_FILE_PATH = "Appointments.csv"; // Update this path as needed
@@ -70,6 +71,10 @@ public class Appointment {
         return medicationName;
     }
 
+    public String getTreatmentDetails() {
+        return treatmentDetails;
+    }
+
     //Setters
 
     public String getTypeOfService() {
@@ -105,6 +110,10 @@ public class Appointment {
         appointmentOutRecord.remove(a);
     }
 
+    public void setTreatmentDetails(String treatmentDetails) {
+        this.treatmentDetails = treatmentDetails;
+    }
+
     // Method to reschedule the appointment (if required)
     public void reschedule(String newDate, String newTime) {
         this.date = newDate;
@@ -120,7 +129,7 @@ public class Appointment {
     // Method to save the appointment details to the CSV file
     public void saveToCSV() throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(APPOINTMENT_FILE_PATH, true))) {
-            bw.write(String.join(",", doctorId, patientId, date, timeSlot, doctorNotes,status));
+            bw.write(String.join(",", doctorId, patientId, date, timeSlot, doctorNotes, treatmentDetails,status));
             bw.newLine(); // Add a newline at the end
         }
     }
