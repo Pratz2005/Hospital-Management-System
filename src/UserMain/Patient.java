@@ -1,6 +1,10 @@
 package UserMain;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,7 @@ public class Patient extends User {
     private List<String> diagnoses;
     private List<String> prescriptions;
     private HashMap<String, String> treatmentHistory; // Keyed by appointment ID or date
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     private static final Scanner scanner = new Scanner(System.in);
@@ -250,7 +255,60 @@ public class Patient extends User {
         return null;
     }
 
+    // View available slots for a specific date entered by the patient
+    public static void viewAvailableSlotsForDate() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the date you want to view (YYYY-MM-DD): ");
+        String inputDate = scanner.nextLine();
+
+        // Validate the input date format
+        if (!validateDate(inputDate)) {
+            System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+            return;
+        }
+
+        List<String> availableSlots = getAvailableSlotsForDate(inputDate);
+
+        if (availableSlots.isEmpty()) {
+            System.out.println("No available slots for the date " + inputDate + ".");
+            return;
+        }
+
+        System.out.println("Available slots for " + inputDate + ":");
+        for (int i = 0; i < availableSlots.size(); i++) {
+            System.out.println((i + 1) + ". " + availableSlots.get(i));
+        }
+    }
+
+    // Validate the date format to ensure correct input
+    private static boolean validateDate(String date) {
+        try {
+            LocalDate.parse(date, dateFormatter);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static List<String> getAvailableSlotsForDate(String date) {
+        List<String> availableSlots = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("doctor_availability.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length == 3 && values[1].equals(date)) {
+                    availableSlots.add(values[2]); // Add only the slot for the specified date
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading CSV: " + e.getMessage());
+        }
+        return availableSlots;
+    }
+
+
     public void logOut() {
         System.out.println("UserMain.Patient " + getName() + " has logged out successfully.");
     }
 }
+
