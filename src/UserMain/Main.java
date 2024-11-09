@@ -2,18 +2,14 @@ package UserMain;
 
 import java.io.*;
 import java.util.*;
-import UserMenu.PatientMenu;
-import UserMenu.DoctorMenu;
-import UserMenu.PharmacistMenu;
-import UserMenu.AdministratorMenu;
-import UserMenu.AbstractMenu;
+import UserMenu.*;
 import Appointment.AppointmentService;
 import Appointment.DoctorAvailabilityService;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
-        String id, password,name;
+        String id, password, name = null;
         String role = null;
 
         // Ask for user login details
@@ -63,18 +59,22 @@ public class Main {
                                 // Assign values based on column order in CSV file
                                 String patientId = dataPatient[0];
                                 String patientPassword = dataPatient[1];
-                                String name_1 = dataPatient[2];
-                                String gender = dataPatient[4];
-                                String dob = dataPatient[3];
+                                String patientName = dataPatient[2];
+                                String dob = dataPatient[4];
+                                String gender = dataPatient[3];
                                 String contactNo = dataPatient[5];
                                 String email = dataPatient[6];
                                 String bloodType = dataPatient[7];
                                 String pastTreatment = dataPatient[8];
 
-                                AppointmentService appointmentService = new AppointmentService();
-                                DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
+                                // Check if this patient ID matches the logged-in user ID
+                                if (patientId.equals(id)) {
+                                    AppointmentService appointmentService = new AppointmentService();
+                                    DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
 
-                                user = new Patient(patientId, patientPassword, role, name_1, gender, dob, contactNo, email, bloodType, pastTreatment,appointmentService,doctorAvailabilityService);
+                                    user = new Patient(patientId, patientPassword, role, patientName, dob, gender, contactNo, email, bloodType, pastTreatment, appointmentService, doctorAvailabilityService);
+                                    break; // Exit loop once the correct patient is found
+                                }
                             }
                         }
                     } else if (role.equals("Doctor")) {
@@ -82,7 +82,7 @@ public class Main {
                         AppointmentService appointmentService = new AppointmentService();
                         DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
 
-                        user = new Doctor(id,password,role, name, appointmentService, doctorAvailabilityService);
+                        user = new Doctor(id, password, role, name, appointmentService, doctorAvailabilityService);
                     } else if (role.equals("Pharmacist")) {
                         user = new Pharmacist(id, password, role, name);
                     } else if (role.equals("Administrator")) {
@@ -101,20 +101,20 @@ public class Main {
         }
 
         // Once authenticated, use the role to show the corresponding menu
-        AbstractMenu Menu = null;
+        AbstractMenu menu = null;
 
         switch (role) {
             case "patient":
-                Menu = new PatientMenu((Patient) user); // Pass the UserMain.Patient object to the PatientMenu
+                menu = new PatientMenu((Patient) user); // Pass the UserMain.Patient object to the PatientMenu
                 break;
             case "Doctor":
-                Menu = new DoctorMenu((Doctor) user); // Pass the UserMain.Doctor object to the DoctorMenu
+                menu = new DoctorMenu((Doctor) user); // Pass the UserMain.Doctor object to the DoctorMenu
                 break;
             case "Pharmacist":
-                Menu = new PharmacistMenu((Pharmacist) user); // Pass the UserMain.Pharmacist object to the PharmacistMenu
+                menu = new PharmacistMenu((Pharmacist) user); // Pass the UserMain.Pharmacist object to the PharmacistMenu
                 break;
             case "Administrator":
-                Menu = new AdministratorMenu((Administrator) user); // Pass the UserMain.Administrator object to the AdministratorMenu
+                menu = new AdministratorMenu((Administrator) user); // Pass the UserMain.Administrator object to the AdministratorMenu
                 break;
             default:
                 System.out.println("Role not recognized.");
@@ -122,6 +122,6 @@ public class Main {
         }
 
         // Display the appropriate menu based on the role
-        Menu.displayMenu();
+        menu.displayMenu();
     }
 }

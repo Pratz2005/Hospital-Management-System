@@ -5,6 +5,7 @@ import Appointment.DoctorAvailabilityManager;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Patient extends User {
     private String patientID;
@@ -62,12 +63,16 @@ public class Patient extends User {
 
     public void scheduleAppointment(String doctorID, String patientID, String date, String timeSlot) {
         String appointmentID = appointmentManager.scheduleAppointment(doctorID, patientID, date, timeSlot);
-        System.out.println("Appointment scheduled successfully. The appointment ID is " + appointmentID);
+        if (appointmentID != null) {
+            System.out.println("Appointment scheduled successfully. The appointment ID is " + appointmentID);
+        } else {
+            System.out.println("Failed to schedule the appointment. Please check the details and try again.");
+        }
     }
+
 
     public void rescheduleAppointment(String appointmentID, String newDate, String newTimeSlot) {
         appointmentManager.rescheduleAppointment(appointmentID, newDate, newTimeSlot);
-        System.out.println("Appointment rescheduled successfully.");
     }
 
     public void cancelAppointment(String appointmentID) {

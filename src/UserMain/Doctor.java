@@ -21,6 +21,10 @@ public class Doctor extends User {
         this.availabilityManager = availabilityManager;
     }
 
+    public String getDoctorID(){
+        return doctorID;
+    }
+
     public void viewPatientMedicalRecord(Patient patient) {
         patient.viewMedicalRecord();
     }

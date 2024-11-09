@@ -1,2 +1,5 @@
 appointmentID,doctorID,patientID,date,timeSlot,status
-
+AP973,D001,P1003,09-11-24,13:00,canceled
+AP575,D001,P1003,09-11-24,10:00,completed
+AP694,D001,P1003,09-11-24,11:00,confirmed
+AP888,D001,P1001,09-11-24,09:30,canceled

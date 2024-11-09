@@ -29,7 +29,6 @@ public class AppointmentRecordService {
                     consultationNotes
             );
             writer.write(line);
-            writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
         }

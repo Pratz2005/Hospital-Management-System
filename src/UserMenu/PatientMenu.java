@@ -1,6 +1,7 @@
 package UserMenu;
 import UserMain.Patient;
 import java.util.Scanner;
+import java.io.*;
 
 public class PatientMenu extends AbstractMenu {
     private Patient patient;
@@ -109,8 +110,80 @@ public class PatientMenu extends AbstractMenu {
     }
 
     private void viewScheduledAppointments() {
-        System.out.print("Enter Appointment ID to view status: ");
-        String appointmentID = sc.nextLine();
-        patient.viewScheduledAppointments(appointmentID);
+        String patientID = patient.getPatientID();
+        String appointmentFile = "src/Files/Appointment.csv";
+        String userFile = "src/Files/User.csv";
+        boolean foundConfirmed = false;
+
+        try (BufferedReader appointmentReader = new BufferedReader(new FileReader(appointmentFile))) {
+            String line = appointmentReader.readLine(); // Skip header line
+
+            while ((line = appointmentReader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                // Check if the line has the expected number of fields
+                if (fields.length < 6) {
+                    System.out.println("Skipping malformed line in Appointment.csv: " + line);
+                    continue;
+                }
+
+                String appointmentID = fields[0];
+                String appointmentDoctorID = fields[1];
+                String appointmentPatientID = fields[2];
+                String date = fields[3];
+                String timeSlot = fields[4];
+                String status = fields[5];
+
+                // Check if the appointment is for the current patient and is confirmed
+                if (appointmentPatientID.equals(patientID) && status.equals("confirmed")) {
+                    String doctorName = getDoctorName(appointmentDoctorID, userFile);
+
+                    System.out.println("\n==== Upcoming Appointment ====");
+                    System.out.println("Appointment ID: " + appointmentID);
+                    System.out.println("Doctor Name: " + doctorName);
+                    System.out.println("Date: " + date);
+                    System.out.println("Time Slot: " + timeSlot);
+                    System.out.println("Status: " + status);
+
+                    foundConfirmed = true;
+                }
+            }
+
+            if (!foundConfirmed) {
+                System.out.println("No confirmed upcoming appointments found.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+        }
     }
+
+    // Helper method to retrieve doctor name by doctor ID from User.csv
+    private String getDoctorName(String doctorID, String userFilePath) {
+        try (BufferedReader userReader = new BufferedReader(new FileReader(userFilePath))) {
+            String line = userReader.readLine(); // Skip header line
+
+            while ((line = userReader.readLine()) != null) {
+                String[] userFields = line.split(",");
+
+                // Check if the line has the expected number of fields
+                if (userFields.length < 4) {
+                    continue; // Skip malformed lines
+                }
+
+                String userID = userFields[0];
+                String role = userFields[2];
+                String name = userFields[3];
+
+                // Match the doctor ID and role to find the doctor's name
+                if (userID.equals(doctorID) && role.equalsIgnoreCase("Doctor")) {
+                    return name;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading User.csv: " + e.getMessage());
+        }
+
+        return "Unknown Doctor"; // Return a default value if the doctor is not found
+    }
+
 }

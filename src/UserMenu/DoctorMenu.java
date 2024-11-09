@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class DoctorMenu extends AbstractMenu {
     private Doctor doctor;
@@ -167,20 +169,73 @@ public class DoctorMenu extends AbstractMenu {
     }
 
     private void acceptOrDeclineAppointmentRequests() {
-        System.out.print("Enter Appointment ID to respond: ");
-        String appointmentID = sc.nextLine();
-        System.out.print("Do you want to (1) Accept or (2) Decline? Enter 1 or 2: ");
-        int response = sc.nextInt();
-        sc.nextLine(); // Clear newline
+        String doctorID = doctor.getDoctorID();
+        String appointmentFile = "src/Files/Appointment.csv";
+        boolean foundPending = false;
 
-        if (response == 1) {
-            doctor.acceptAppointment(appointmentID);
-        } else if (response == 2) {
-            doctor.declineAppointment(appointmentID);
-        } else {
-            System.out.println("Invalid option. Please choose 1 to accept or 2 to decline.");
+        try (BufferedReader reader = new BufferedReader(new FileReader(appointmentFile))) {
+            String line = reader.readLine(); // Skip header line
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                // Check if the line has the expected number of fields to avoid ArrayIndexOutOfBoundsException
+                if (fields.length < 6) {
+                    System.out.println("Skipping malformed line in Appointment.csv: " + line);
+                    continue;
+                }
+
+                String appointmentID = fields[0];
+                String appointmentDoctorID = fields[1];
+                String patientID = fields[2];
+                String date = fields[3];
+                String timeSlot = fields[4];
+                String status = fields[5];
+
+                // Check if the appointment is for this doctor and has a pending status
+                if (appointmentDoctorID.equals(doctorID) && status.equals("pending")) {
+                    foundPending = true;
+                    System.out.println("\n==== Pending Appointment ====");
+                    System.out.println("Appointment ID: " + appointmentID);
+                    System.out.println("Patient ID: " + patientID);
+                    System.out.println("Date: " + date);
+                    System.out.println("Time Slot: " + timeSlot);
+
+                    // Loop until a valid response (1 or 2) is provided
+                    int response;
+                    while (true) {
+                        System.out.print("Do you want to (1) Accept or (2) Decline this appointment? Enter 1 or 2: ");
+                        if (sc.hasNextInt()) {
+                            response = sc.nextInt();
+                            sc.nextLine(); // Clear newline
+
+                            if (response == 1) {
+                                doctor.acceptAppointment(appointmentID);
+                                System.out.println("Appointment accepted.");
+                                break;
+                            } else if (response == 2) {
+                                doctor.declineAppointment(appointmentID);
+                                System.out.println("Appointment declined.");
+                                break;
+                            } else {
+                                System.out.println("Invalid option. Please enter 1 to accept or 2 to decline.");
+                            }
+                        } else {
+                            System.out.println("Invalid input. Please enter a number (1 to accept or 2 to decline).");
+                            sc.nextLine(); // Clear invalid input
+                        }
+                    }
+                }
+            }
+
+            if (!foundPending) {
+                System.out.println("No pending appointments found.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
         }
     }
+
 
     private void viewUpcomingAppointments() {
         doctor.viewUpcomingAppointments();
@@ -189,17 +244,85 @@ public class DoctorMenu extends AbstractMenu {
     private void recordAppointmentOutcome() {
         System.out.print("Enter Appointment ID: ");
         String appointmentID = sc.nextLine();
+
+        // Confirm appointment date from Appointment.csv
+        String appointmentFile = "src/Files/Appointment.csv";
+        String correctDate = null;
+        boolean appointmentFound = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(appointmentFile))) {
+            String line = reader.readLine(); // Skip header line
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                // Check if the line has the expected number of fields
+                if (fields.length < 6) {
+                    System.out.println("Skipping malformed line in Appointment.csv: " + line);
+                    continue;
+                }
+
+                String currentAppointmentID = fields[0];
+                String date = fields[3];
+
+                if (currentAppointmentID.equals(appointmentID)) {
+                    correctDate = date;
+                    appointmentFound = true;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+            return;
+        }
+
+        if (!appointmentFound) {
+            System.out.println("No appointment found with ID: " + appointmentID);
+            return;
+        }
+
         System.out.print("Enter diagnosis: ");
         String diagnosis = sc.nextLine();
         System.out.print("Enter prescription medicine: ");
         String prescriptionMedicine = sc.nextLine();
-        System.out.print("Enter prescription quantity: ");
-        int quantity = sc.nextInt();
-        sc.nextLine(); // Clear newline
+
+        // Validate prescription quantity
+        int quantity;
+        while (true) {
+            System.out.print("Enter prescription quantity: ");
+            if (sc.hasNextInt()) {
+                quantity = sc.nextInt();
+                sc.nextLine(); // Clear newline
+                if (quantity > 0) {
+                    break;
+                } else {
+                    System.out.println("Quantity must be a positive integer. Please try again.");
+                }
+            } else {
+                System.out.println("Invalid input. Quantity must be a positive integer.");
+                sc.nextLine(); // Clear invalid input
+            }
+        }
+
         System.out.print("Enter treatment plan: ");
         String treatmentPlan = sc.nextLine();
-        System.out.print("Enter date of appointment (e.g., YYYY-MM-DD): ");
-        String date = sc.nextLine();
+
+        // Validate date format and confirm with Appointment.csv
+        String date;
+        while (true) {
+            System.out.print("Enter date of appointment (e.g., DD-MM-YY): ");
+            date = sc.nextLine();
+            if (isValidDateFormat(date)) {
+                if (date.equals(correctDate)) {
+                    break;
+                } else {
+                    System.out.println("The entered date does not match the scheduled appointment date. Please enter the correct date.");
+                }
+            } else {
+                System.out.println("Invalid date format. Please use DD-MM-YY format.");
+            }
+        }
+
         System.out.print("Enter type of service (e.g., consultation, X-ray): ");
         String typeOfService = sc.nextLine();
         System.out.print("Enter consultation notes: ");
@@ -207,4 +330,17 @@ public class DoctorMenu extends AbstractMenu {
 
         doctor.recordAppointmentOutcome(appointmentID, diagnosis, prescriptionMedicine, quantity, treatmentPlan, date, typeOfService, notes);
     }
+
+    // Helper method to validate date format
+    private boolean isValidDateFormat(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
 }
