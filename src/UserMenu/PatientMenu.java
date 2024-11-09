@@ -1,6 +1,7 @@
 package UserMenu;
 import UserMain.Patient;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 import java.io.*;
 
 public class PatientMenu extends AbstractMenu {
@@ -29,39 +30,46 @@ public class PatientMenu extends AbstractMenu {
 
             displayLogoutOption(9); // Call the common logout option method
 
-            choice = sc.nextInt();
-            sc.nextLine(); // Clear the newline character from the buffer
+            // Wrap input handling in try-catch to handle non-integer inputs
+            try {
+                choice = sc.nextInt();
+                sc.nextLine(); // Clear the newline character from the buffer
 
-            switch (choice) {
-                case 1:
-                    patient.viewMedicalRecord();
-                    break;
-                case 2:
-                    updatePersonalInformation();
-                    break;
-                case 3:
-                    viewAvailableAppointmentSlots();
-                    break;
-                case 4:
-                    scheduleAppointment();
-                    break;
-                case 5:
-                    rescheduleAppointment();
-                    break;
-                case 6:
-                    cancelAppointment();
-                    break;
-                case 7:
-                    viewScheduledAppointments();
-                    break;
-                case 8:
-                    patient.viewPastAppointmentOutcome();
-                    break;
-                case 9:
-                    System.out.println("Logging out...");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                switch (choice) {
+                    case 1:
+                        patient.viewMedicalRecord();
+                        break;
+                    case 2:
+                        updatePersonalInformation();
+                        break;
+                    case 3:
+                        viewAvailableAppointmentSlots();
+                        break;
+                    case 4:
+                        scheduleAppointment();
+                        break;
+                    case 5:
+                        rescheduleAppointment();
+                        break;
+                    case 6:
+                        cancelAppointment();
+                        break;
+                    case 7:
+                        viewScheduledAppointments();
+                        break;
+                    case 8:
+                        patient.viewPastAppointmentOutcome();
+                        break;
+                    case 9:
+                        System.out.println("Logging out...");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine(); // Clear invalid input from the scanner buffer
+                choice = -1; // Reset choice to continue the loop without exiting
             }
         } while (choice != 9); // Repeat until logout
     }
@@ -83,31 +91,68 @@ public class PatientMenu extends AbstractMenu {
     }
 
     private void scheduleAppointment() {
-        System.out.print("Enter Doctor ID: ");
-        String doctorID = sc.nextLine();
-        System.out.print("Enter date (e.g., DD-MM-YY): ");
-        String date = sc.nextLine();
-        System.out.print("Enter time slot (e.g., 09:00): ");
-        String timeSlot = sc.nextLine();
-        String patientID= patient.getPatientID();
-        patient.scheduleAppointment(doctorID,patientID,date, timeSlot);
+        String patientID = patient.getPatientID();
+        patient.scheduleAppointment(patientID);
     }
 
     private void rescheduleAppointment() {
-        System.out.print("Enter Appointment ID to reschedule: ");
-        String appointmentID = sc.nextLine();
-        System.out.print("Enter new date (e.g., DD-MM-YY): ");
-        String newDate = sc.nextLine();
-        System.out.print("Enter new time slot (e.g., 09:00): ");
-        String newTimeSlot = sc.nextLine();
-        patient.rescheduleAppointment(appointmentID, newDate, newTimeSlot);
+        String appointmentID;
+
+        while (true) {
+            System.out.print("Enter Appointment ID to cancel: ");
+            appointmentID = sc.nextLine();
+
+            // Check if the appointment ID exists and the status is not "completed"
+            if (isValidAppointmentForCancellation(appointmentID)) {
+                break; // Valid appointment ID, proceed to cancel
+            } else {
+                System.out.println("Invalid Appointment ID or the appointment is already completed. Please enter a valid Appointment ID.");
+            }
+        }
+        patient.rescheduleAppointment(appointmentID);
     }
 
     private void cancelAppointment() {
-        System.out.print("Enter Appointment ID to cancel: ");
-        String appointmentID = sc.nextLine();
+        String appointmentID;
+
+        while (true) {
+            System.out.print("Enter Appointment ID to cancel: ");
+            appointmentID = sc.nextLine();
+
+            // Check if the appointment ID exists and the status is not "completed"
+            if (isValidAppointmentForCancellation(appointmentID)) {
+                break; // Valid appointment ID, proceed to cancel
+            } else {
+                System.out.println("Invalid Appointment ID or the appointment is already completed. Please enter a valid Appointment ID.");
+            }
+        }
+
+        // Call the cancelAppointment method on the patient object
         patient.cancelAppointment(appointmentID);
     }
+
+    // Helper method to validate the appointment ID and its status
+    private boolean isValidAppointmentForCancellation(String appointmentID) {
+        String appointmentFile = "src/Files/Appointment.csv";
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(appointmentFile))) {
+            String line = reader.readLine(); // Skip header line
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                // Check if the appointment ID matches and status is not "completed"
+                if (fields[0].equals(appointmentID) && !fields[5].equalsIgnoreCase("completed")) {
+                    return true; // Valid appointment ID for cancellation
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+        }
+
+        return false; // Appointment ID is invalid or status is "completed"
+    }
+
 
     private void viewScheduledAppointments() {
         String patientID = patient.getPatientID();
@@ -123,7 +168,7 @@ public class PatientMenu extends AbstractMenu {
 
                 // Check if the line has the expected number of fields
                 if (fields.length < 6) {
-                    System.out.println("Skipping malformed line in Appointment.csv: " + line);
+                    //System.out.println("Skipping malformed line in Appointment.csv: " + line);
                     continue;
                 }
 
@@ -185,5 +230,4 @@ public class PatientMenu extends AbstractMenu {
 
         return "Unknown Doctor"; // Return a default value if the doctor is not found
     }
-
 }

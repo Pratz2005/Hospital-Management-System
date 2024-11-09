@@ -63,8 +63,8 @@ public class Patient extends User {
         }
     }
 
-    public void scheduleAppointment(String doctorID, String patientID, String date, String timeSlot) {
-        String appointmentID = appointmentManager.scheduleAppointment(doctorID, patientID, date, timeSlot);
+    public void scheduleAppointment(String patientID) {
+        String appointmentID = appointmentManager.scheduleAppointment(patientID);
         if (appointmentID != null) {
             System.out.println("Appointment scheduled successfully. The appointment ID is " + appointmentID);
         } else {
@@ -73,8 +73,8 @@ public class Patient extends User {
     }
 
 
-    public void rescheduleAppointment(String appointmentID, String newDate, String newTimeSlot) {
-        appointmentManager.rescheduleAppointment(appointmentID, newDate, newTimeSlot);
+    public void rescheduleAppointment(String appointmentID) {
+        appointmentManager.rescheduleAppointment(appointmentID);
     }
 
     public void cancelAppointment(String appointmentID) {
@@ -137,7 +137,7 @@ public class Patient extends User {
 
                 // Check if the line has the expected number of fields
                 if (fields.length < 9) {
-                    System.out.println("Skipping malformed line in AppointmentRecord.csv: " + line);
+                    //System.out.println("Skipping malformed line in AppointmentRecord.csv: " + line);
                     continue;
                 }
 

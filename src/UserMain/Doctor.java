@@ -187,11 +187,42 @@ public class Doctor extends User {
     private void saveAppointmentRecords(List<String[]> records) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_RECORD_FILE))) {
             for (String[] record : records) {
-                writer.write(String.join("\t", record));
+                writer.write(String.join(",", record));
                 writer.newLine();
             }
         } catch (IOException e) {
             System.err.println("Error writing to AppointmentRecord.csv: " + e.getMessage());
         }
     }
+
+    public void viewAppointmentsByDate(String date) {
+        System.out.println("Confirmed Appointments for Doctor ID: " + doctorID + " on " + date);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
+            String line;
+            boolean hasAppointments = false;
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                // Check if the appointment is for this doctor, on the specified date, and confirmed
+                if (fields[1].equals(doctorID) && fields[3].equals(date) && fields[5].equals("confirmed")) {
+                    hasAppointments = true;
+                    System.out.println("Appointment ID: " + fields[0]);
+                    System.out.println("Patient ID: " + fields[2]);
+                    System.out.println("Date: " + fields[3]);
+                    System.out.println("Time Slot: " + fields[4]);
+                    System.out.println("Status: " + fields[5]);
+                    System.out.println("-------------------------");
+                }
+            }
+
+            if (!hasAppointments) {
+                System.out.println("No confirmed appointments found for this doctor on " + date + ".");
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+        }
+    }
+
 }

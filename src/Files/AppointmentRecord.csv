@@ -1,2 +1,3 @@
 appointmentID,diagnosis,prescriptionMedicine,prescriptionQuantity,prescriptionStatus,treatmentPlan,date,typeOfService,consultationNotes
-AP575,Cold,Ibuprofen,2,pending,Keep watch,09-11-24,Consultation,NA
+AP575,NA,Ibuprofen,7,pending,NA,09-11-24,Consultation,NA
+AP694,rich,Amoxicillin,3,pending,have med,09-11-24,X-ray,NA

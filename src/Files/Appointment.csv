@@ -1,5 +1,12 @@
 appointmentID,doctorID,patientID,date,timeSlot,status
-AP973,D001,P1003,09-11-24,13:00,canceled
+AP973,D001,P1003,09-11-24,13:00,confirmed
 AP575,D001,P1003,09-11-24,10:00,completed
 AP694,D001,P1003,09-11-24,11:00,confirmed
 AP888,D001,P1001,09-11-24,09:30,canceled
+AP620,D002,P1002,11-11-24,12:00,confirmed
+AP382,D002,P1002,11-11-24,12:00,confirmed
+AP819,D002,P1002,eee,ffe,canceled
+AP392,D002,P1002,ee,ee,canceled
+AP785,D002,P1002,11-11-24,12:30,confirmed
+AP411,D001,P1003,09-11-24,11:00,canceled
+AP335,D002,P1003,12-12-24,10:30,confirmed
