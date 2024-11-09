@@ -1,12 +1,14 @@
 package UserMenu;
 import UserMain.Pharmacist;
+import java.util.InputMismatchException;
 
 public class PharmacistMenu extends AbstractMenu {
     private Pharmacist pharmacist;
 
-    public PharmacistMenu(Pharmacist pharmacist){
+    public PharmacistMenu(Pharmacist pharmacist) {
         this.pharmacist = pharmacist;
     }
+
     @Override
     public void displayMenu() {
         int choice;
@@ -19,31 +21,38 @@ public class PharmacistMenu extends AbstractMenu {
 
             displayLogoutOption(5); // Call the common logout option method
 
-            choice = sc.nextInt();
-            sc.nextLine(); // Clear the newline character from the buffer
+            // Wrap input handling in a try-catch to handle non-integer inputs
+            try {
+                choice = sc.nextInt();
+                sc.nextLine(); // Clear the newline character from the buffer
 
-            switch (choice) {
-                case 1:
-                    // View appointment outcome record logic
-                    System.out.println("Ph1");
-                    break;
-                case 2:
-                    // Update prescription status logic
-                    System.out.println("Ph2");
-                    break;
-                case 3:
-                    // View medication inventory logic
-                    System.out.println("Ph3");
-                    break;
-                case 4:
-                    // Submit replenishment request logic
-                    System.out.println("Ph4");
-                    break;
-                case 5:
-                    System.out.println("Logging out...");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                switch (choice) {
+                    case 1:
+                        // View appointment outcome record logic
+                        System.out.println("Ph1");
+                        break;
+                    case 2:
+                        // Update prescription status logic
+                        System.out.println("Ph2");
+                        break;
+                    case 3:
+                        // View medication inventory logic
+                        System.out.println("Ph3");
+                        break;
+                    case 4:
+                        // Submit replenishment request logic
+                        System.out.println("Ph4");
+                        break;
+                    case 5:
+                        System.out.println("Logging out...");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine(); // Clear the invalid input from the scanner buffer
+                choice = -1; // Reset choice to ensure loop continues
             }
         } while (choice != 5); // Repeat until logout
     }

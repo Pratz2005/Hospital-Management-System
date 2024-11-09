@@ -5,7 +5,9 @@ import Appointment.DoctorAvailabilityManager;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Patient extends User {
     private String patientID;
@@ -86,18 +88,63 @@ public class Patient extends User {
     }
 
     public void viewPastAppointmentOutcome() {
+        String appointmentFilePath = "src/Files/Appointment.csv";
         String recordFilePath = "src/Files/AppointmentRecord.csv";
         System.out.println("Past Appointment Outcomes for Patient ID: " + patientID);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(recordFilePath))) {
+        // List to store completed appointment IDs for this patient
+        List<String> completedAppointments = new ArrayList<>();
+
+        // Step 1: Read Appointment.csv to find completed appointments for this patient
+        try (BufferedReader appointmentReader = new BufferedReader(new FileReader(appointmentFilePath))) {
+            String line = appointmentReader.readLine(); // Skip header line
+
+            while ((line = appointmentReader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                // Check if the line has the expected number of fields
+                if (fields.length < 6) {
+                    System.out.println("Skipping malformed line in Appointment.csv: " + line);
+                    continue;
+                }
+
+                String appointmentID = fields[0];
+                String appointmentPatientID = fields[2];
+                String status = fields[5];
+
+                // If the appointment is completed for the current patient, store the appointmentID
+                if (appointmentPatientID.equals(patientID) && status.equalsIgnoreCase("completed")) {
+                    completedAppointments.add(appointmentID);
+                }
+            }
+
+            if (completedAppointments.isEmpty()) {
+                System.out.println("No completed appointments found for this patient.");
+                return;
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+            return;
+        }
+
+        // Step 2: Read AppointmentRecord.csv to print details for completed appointments
+        try (BufferedReader recordReader = new BufferedReader(new FileReader(recordFilePath))) {
             String line;
             boolean hasRecord = false;
 
-            // Read each line and check if it matches this patient's ID
-            while ((line = reader.readLine()) != null) {
+            while ((line = recordReader.readLine()) != null) {
                 String[] fields = line.split(",");
 
-                if (fields[0].equals(patientID)) {
+                // Check if the line has the expected number of fields
+                if (fields.length < 9) {
+                    System.out.println("Skipping malformed line in AppointmentRecord.csv: " + line);
+                    continue;
+                }
+
+                String appointmentID = fields[0];
+
+                // If the appointmentID is in the completedAppointments list, print the record
+                if (completedAppointments.contains(appointmentID)) {
                     hasRecord = true;
                     System.out.println("Appointment ID: " + fields[0]);
                     System.out.println("Diagnosis: " + fields[1]);
@@ -113,10 +160,11 @@ public class Patient extends User {
             }
 
             if (!hasRecord) {
-                System.out.println("No past appointment records found for this patient.");
+                System.out.println("No past appointment records found in AppointmentRecord.csv for this patient.");
             }
         } catch (IOException e) {
             System.err.println("Error reading AppointmentRecord.csv: " + e.getMessage());
         }
     }
+
 }
