@@ -2,24 +2,32 @@ package Appointment;
 
 import java.io.*;
 import java.util.*;
+import java.util.Random;
+import java.lang.*;
 
 public class AppointmentService extends DoctorAvailabilityService implements AppointmentManager {
     private static final String APPOINTMENT_FILE = "src/Files/Appointment.csv";
     private static final String USER_FILE = "src/Files/User.csv";  // Add this line for the User.csv file
 
     @Override
-    public void scheduleAppointment(String doctorID, String patientID, String date, String timeSlot) {
+    public String scheduleAppointment(String doctorID, String patientID, String date, String timeSlot) {
+        String appointmentID = null;
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_FILE, true))) {
-            String appointmentID = UUID.randomUUID().toString();
+            Random random = new Random();
+            Integer randomNumber = random.nextInt(900) + 100;
+            appointmentID = "AP" + randomNumber.toString();
             String status = "pending";
             String doctorName = getDoctorNameByID(doctorID); // Fetch the doctor's name from User.csv
             String line = String.join(",", appointmentID, doctorID, patientID, date, timeSlot, status);
             writer.write(line);
             writer.newLine();
-            updateDoctorAvailability(doctorID, doctorName, date, timeSlot, false);  // Pass the doctor's name
+
+            // Update doctor's availability
+            updateDoctorAvailability(doctorID, doctorName, date, timeSlot, false); // Pass the doctor's name
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return appointmentID;
     }
 
     @Override

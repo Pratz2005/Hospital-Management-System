@@ -28,8 +28,10 @@ public class DoctorAvailabilityService implements DoctorAvailabilityManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
+                // Assuming data structure: doctorID, doctorName, date, slot, status
                 if (data[0].equals(doctorID) && data[2].equals(date) && data[4].equals("available")) {
-                    availableSlots.add(data[3]);  // Add the available time slot
+                    String formattedSlot = String.format("Doctor: %s, Date: %s, Time Slot: %s", data[1], data[2], data[3]);
+                    availableSlots.add(formattedSlot);
                 }
             }
         } catch (IOException e) {
@@ -37,6 +39,7 @@ public class DoctorAvailabilityService implements DoctorAvailabilityManager {
         }
         return availableSlots.toArray(new String[0]);
     }
+
 
     // Method to update the availability status of a specific time slot for a doctor
     public void updateDoctorAvailability(String doctorID, String doctorName, String date, String timeSlot, boolean isAvailable) {

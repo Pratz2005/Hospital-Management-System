@@ -30,6 +30,10 @@ public class Patient extends User {
         this.availabilityManager = availabilityManager;
     }
 
+    public String getPatientID() {
+        return patientID;
+    }
+
     public void viewMedicalRecord() {
         System.out.println("Medical Record:");
         System.out.println("Patient ID: " + patientID);
@@ -52,13 +56,13 @@ public class Patient extends User {
         String[] availableSlots = availabilityManager.viewDoctorAvailability(doctorID, date);
         System.out.println("Available Slots:");
         for (String slot : availableSlots) {
-            System.out.println(slot);
+            System.out.println(slot);  // Each slot includes doctor name, date, and time slot
         }
     }
 
-    public void scheduleAppointment(String doctorID, String date, String timeSlot) {
-        appointmentManager.scheduleAppointment(doctorID, patientID, date, timeSlot);
-        System.out.println("Appointment scheduled successfully.");
+    public void scheduleAppointment(String doctorID, String patientID, String date, String timeSlot) {
+        String appointmentID = appointmentManager.scheduleAppointment(doctorID, patientID, date, timeSlot);
+        System.out.println("Appointment scheduled successfully. The appointment ID is " + appointmentID);
     }
 
     public void rescheduleAppointment(String appointmentID, String newDate, String newTimeSlot) {

@@ -88,7 +88,8 @@ public class PatientMenu extends AbstractMenu {
         String date = sc.nextLine();
         System.out.print("Enter time slot (e.g., 09:00): ");
         String timeSlot = sc.nextLine();
-        patient.scheduleAppointment(doctorID, date, timeSlot);
+        String patientID= patient.getPatientID();
+        patient.scheduleAppointment(doctorID,patientID,date, timeSlot);
     }
 
     private void rescheduleAppointment() {
