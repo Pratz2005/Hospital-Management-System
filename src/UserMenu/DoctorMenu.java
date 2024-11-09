@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DoctorMenu extends AbstractMenu {
     private Doctor doctor;
@@ -123,12 +125,45 @@ public class DoctorMenu extends AbstractMenu {
     }
 
     private void setAvailabilityForAppointments() {
-        System.out.print("Enter date for availability (e.g., YYYY-MM-DD): ");
+        System.out.print("Enter date for availability (e.g., DD-MM-YY): ");
         String date = sc.nextLine();
-        System.out.print("Enter available time slots (comma-separated, e.g., 09:00,10:00,14:00): ");
-        String[] slots = sc.nextLine().split(",");
 
-        doctor.setAvailability(date, slots);
+        // Generate time slots from 9:00 to 17:00 in half-hour intervals
+        List<String> timeSlots = new ArrayList<>();
+        int startHour = 9;
+        int endHour = 17;
+
+        System.out.println("Available time slots:");
+        int slotNumber = 1;
+        for (int hour = startHour; hour < endHour; hour++) {
+            String slot1 = String.format("%02d:00-%02d:30", hour, hour);
+            String slot2 = String.format("%02d:30-%02d:00", hour, hour + 1);
+            timeSlots.add(slot1);
+            timeSlots.add(slot2);
+            System.out.printf("(%d) %s\n", slotNumber++, slot1);
+            System.out.printf("(%d) %s\n", slotNumber++, slot2);
+        }
+
+        System.out.print("Enter the numbers for available time slots (e.g., 1,3,5): ");
+        String[] selectedSlots = sc.nextLine().split(",");
+        List<String> availableSlots = new ArrayList<>();
+
+        // Add the selected time slots based on input numbers
+        for (String slot : selectedSlots) {
+            try {
+                int slotIndex = Integer.parseInt(slot.trim()) - 1;
+                if (slotIndex >= 0 && slotIndex < timeSlots.size()) {
+                    availableSlots.add(timeSlots.get(slotIndex));
+                } else {
+                    System.out.println("Invalid slot number: " + slot);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input: " + slot);
+            }
+        }
+
+        // Pass the selected slots to the doctor's availability method
+        doctor.setAvailability(date, availableSlots.toArray(new String[0]));
     }
 
     private void acceptOrDeclineAppointmentRequests() {

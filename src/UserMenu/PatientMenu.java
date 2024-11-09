@@ -76,7 +76,7 @@ public class PatientMenu extends AbstractMenu {
     private void viewAvailableAppointmentSlots() {
         System.out.print("Enter Doctor ID: ");
         String doctorID = sc.nextLine();
-        System.out.print("Enter date (e.g., YYYY-MM-DD): ");
+        System.out.print("Enter date (e.g., DD-MM-YY): ");
         String date = sc.nextLine();
         patient.viewAvailableAppointmentSlots(doctorID, date);
     }
@@ -84,7 +84,7 @@ public class PatientMenu extends AbstractMenu {
     private void scheduleAppointment() {
         System.out.print("Enter Doctor ID: ");
         String doctorID = sc.nextLine();
-        System.out.print("Enter date (e.g., YYYY-MM-DD): ");
+        System.out.print("Enter date (e.g., DD-MM-YY): ");
         String date = sc.nextLine();
         System.out.print("Enter time slot (e.g., 09:00): ");
         String timeSlot = sc.nextLine();
@@ -94,7 +94,7 @@ public class PatientMenu extends AbstractMenu {
     private void rescheduleAppointment() {
         System.out.print("Enter Appointment ID to reschedule: ");
         String appointmentID = sc.nextLine();
-        System.out.print("Enter new date (e.g., YYYY-MM-DD): ");
+        System.out.print("Enter new date (e.g., DD-MM-YY): ");
         String newDate = sc.nextLine();
         System.out.print("Enter new time slot (e.g., 09:00): ");
         String newTimeSlot = sc.nextLine();
