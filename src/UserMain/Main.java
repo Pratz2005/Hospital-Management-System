@@ -11,93 +11,107 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         String id, password, name = null;
         String role = null;
-
-        // Ask for user login details
-        System.out.println("==== Login ====");
-        System.out.print("Enter your user ID: ");
-        id = sc.nextLine();
-        System.out.print("Enter your password: ");
-        password = sc.nextLine();
-
-        // Verify credentials and get the role from the CSV file
+        String filePath = "src/Files/User.csv"; // Path to User.csv
+        String patientFilePath = "src/Files/Patient_List.csv"; // Path to Patient_List.csv
         boolean authenticated = false;
-        Object user = null; // To hold the user object (UserMain.Patient, UserMain.Doctor, etc.)
+        Object user = null;
 
-        // Path to the UserMain.User.csv file
-        String filePath = "/Files/User.csv";
+        while (true) { // Main loop to restart login if needed
+            System.out.println("==== Login ====");
+            System.out.print("Enter your user ID: ");
+            id = sc.nextLine();
+            System.out.print("Enter your password: ");
+            password = sc.nextLine();
 
-        try (InputStream is = Main.class.getResourceAsStream(filePath);
-             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                boolean userFound = false;
+                authenticated = false; // Reset authenticated for each login attempt
+                br.readLine(); // Skip header
 
-            String line;
-            // Skip header
-            br.readLine();
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(",");
+                    String userId = data[0];
+                    String userPassword = data[1];
+                    role = data[2];
+                    name = data[3];
 
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                String userId = data[0];
-                String userPassword = data[1];
-                role = data[2];
-                name = data[3];
+                    if (userId.equals(id) && userPassword.equals(password)) {
+                        userFound = true;
 
-                // Check if the entered ID and password match
-                if (userId.equals(id) && userPassword.equals(password)) {
-                    authenticated = true;
-                    // Create the user object based on the role
-                    if (role.equals("patient")) {
-                        String patientFilePath = "/Files/Patient_List.csv";
-                        try (InputStream isPatient = Main.class.getResourceAsStream(patientFilePath);
-                             BufferedReader brPatient = new BufferedReader(new InputStreamReader(isPatient))) {
+                        if (password.equals("password")) {
+                            System.out.println("You are using the default password. Please change your password.");
 
-                            String linePatient;
-                            // Skip the header line if present
-                            brPatient.readLine();
+                            String newPassword, confirmPassword;
+                            while (true) {
+                                System.out.print("Enter new password: ");
+                                newPassword = sc.nextLine();
+                                System.out.print("Confirm new password: ");
+                                confirmPassword = sc.nextLine();
 
-                            while ((linePatient = brPatient.readLine()) != null) {
-                                String[] dataPatient = linePatient.split(",");
-
-                                // Assign values based on column order in CSV file
-                                String patientId = dataPatient[0];
-                                String patientPassword = dataPatient[1];
-                                String patientName = dataPatient[2];
-                                String dob = dataPatient[4];
-                                String gender = dataPatient[3];
-                                String contactNo = dataPatient[5];
-                                String email = dataPatient[6];
-                                String bloodType = dataPatient[7];
-                                String pastTreatment = dataPatient[8];
-
-                                // Check if this patient ID matches the logged-in user ID
-                                if (patientId.equals(id)) {
-                                    AppointmentService appointmentService = new AppointmentService();
-                                    DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
-
-                                    user = new Patient(patientId, patientPassword, role, patientName, dob, gender, contactNo, email, bloodType, pastTreatment, appointmentService, doctorAvailabilityService);
-                                    break; // Exit loop once the correct patient is found
+                                if (newPassword.equals(confirmPassword)) {
+                                    updatePasswordInCSV(filePath, patientFilePath, id, newPassword);
+                                    System.out.println("Password changed successfully. Please login again with your new password.\n");
+                                    break;
+                                } else {
+                                    System.out.println("Passwords do not match. Please try again.");
                                 }
                             }
+                            // After password change, return to login loop
+                            break;
                         }
-                    } else if (role.equals("Doctor")) {
-                        // Instantiate AppointmentService and DoctorAvailabilityService for Doctor
-                        AppointmentService appointmentService = new AppointmentService();
-                        DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
 
-                        user = new Doctor(id, password, role, name, appointmentService, doctorAvailabilityService);
-                    } else if (role.equals("Pharmacist")) {
-                        user = new Pharmacist(id, password, role, name);
-                    } else if (role.equals("Administrator")) {
-                        user = new Administrator();
+                        authenticated = true;
+
+                        if (role.equals("patient")) {
+                            try (BufferedReader brPatient = new BufferedReader(new FileReader(patientFilePath))) {
+
+                                String linePatient;
+                                brPatient.readLine();
+
+                                while ((linePatient = brPatient.readLine()) != null) {
+                                    String[] dataPatient = linePatient.split(",");
+                                    String patientId = dataPatient[0];
+
+                                    if (patientId.equals(id)) {
+                                        String dob = dataPatient[4];
+                                        String gender = dataPatient[3];
+                                        String contactNo = dataPatient[5];
+                                        String email = dataPatient[6];
+                                        String bloodType = dataPatient[7];
+                                        String pastTreatment = dataPatient[8];
+
+                                        AppointmentService appointmentService = new AppointmentService();
+                                        DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
+
+                                        user = new Patient(patientId, password, role, name, dob, gender, contactNo, email, bloodType, pastTreatment, appointmentService, doctorAvailabilityService);
+                                        break;
+                                    }
+                                }
+                            }
+                        } else if (role.equals("Doctor")) {
+                            AppointmentService appointmentService = new AppointmentService();
+                            DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
+                            user = new Doctor(id, password, role, name, appointmentService, doctorAvailabilityService);
+                        } else if (role.equals("Pharmacist")) {
+                            user = new Pharmacist(id, password, role, name);
+                        } else if (role.equals("Administrator")) {
+                            user = new Administrator();
+                        }
+                        break;
                     }
-                    break;
                 }
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
-        }
 
-        if (!authenticated) {
-            System.out.println("Invalid user ID or password.");
-            return;
+                if (!userFound) {
+                    System.out.println("Invalid user ID or password. Please try again.\n");
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading file: " + e.getMessage());
+            }
+
+            if (authenticated) {
+                break; // Exit loop if authentication is successful
+            }
         }
 
         // Once authenticated, use the role to show the corresponding menu
@@ -105,16 +119,16 @@ public class Main {
 
         switch (role) {
             case "patient":
-                menu = new PatientMenu((Patient) user); // Pass the UserMain.Patient object to the PatientMenu
+                menu = new PatientMenu((Patient) user);
                 break;
             case "Doctor":
-                menu = new DoctorMenu((Doctor) user); // Pass the UserMain.Doctor object to the DoctorMenu
+                menu = new DoctorMenu((Doctor) user);
                 break;
             case "Pharmacist":
-                menu = new PharmacistMenu((Pharmacist) user); // Pass the UserMain.Pharmacist object to the PharmacistMenu
+                menu = new PharmacistMenu((Pharmacist) user);
                 break;
             case "Administrator":
-                menu = new AdministratorMenu((Administrator) user); // Pass the UserMain.Administrator object to the AdministratorMenu
+                menu = new AdministratorMenu((Administrator) user);
                 break;
             default:
                 System.out.println("Role not recognized.");
@@ -124,4 +138,53 @@ public class Main {
         // Display the appropriate menu based on the role
         menu.displayMenu();
     }
+
+    private static void updatePasswordInCSV(String userFilePath, String patientFilePath, String userId, String newPassword) throws IOException {
+        // Update password in User.csv
+        List<String> userLines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(userFilePath))) {
+            String line;
+            userLines.add(reader.readLine()); // Read header
+
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data[0].equals(userId)) {
+                    data[1] = newPassword;
+                    line = String.join(",", data);
+                }
+                userLines.add(line);
+            }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFilePath))) {
+            for (String updatedLine : userLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        }
+
+        // Update password in Patient_List.csv (only if the user is a patient)
+        List<String> patientLines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(patientFilePath))) {
+            String line;
+            patientLines.add(reader.readLine()); // Read header
+
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data[0].equals(userId)) { // Check if this is the patient
+                    data[1] = newPassword;
+                    line = String.join(",", data);
+                }
+                patientLines.add(line);
+            }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(patientFilePath))) {
+            for (String updatedLine : patientLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        }
+    }
+
 }
