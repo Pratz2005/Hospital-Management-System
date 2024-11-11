@@ -3,15 +3,18 @@ import UserMain.Patient;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.io.*;
+import Appointment.AppointmentService;
 
 public class PatientMenu extends AbstractMenu {
     private Patient patient;
     private Scanner sc;
+    private AppointmentService appointmentService;
 
     // Constructor to accept the patient object
     public PatientMenu(Patient patient) {
         this.patient = patient;
         this.sc = new Scanner(System.in);
+        this.appointmentService = new AppointmentService();
     }
 
     @Override
@@ -75,19 +78,82 @@ public class PatientMenu extends AbstractMenu {
     }
 
     private void updatePersonalInformation() {
-        System.out.print("Enter new email: ");
-        String newEmail = sc.nextLine();
-        System.out.print("Enter new contact number: ");
-        String newContactNo = sc.nextLine();
+        String newEmail;
+        String newContactNo;
+
+        // Validate email format
+        while (true) {
+            System.out.print("Enter new email: ");
+            newEmail = sc.nextLine();
+            if (isValidEmail(newEmail)) {
+                break;
+            } else {
+                System.out.println("Invalid email format. Please enter a valid email.");
+            }
+        }
+
+        // Validate contact number format
+        while (true) {
+            System.out.print("Enter new contact number: ");
+            newContactNo = sc.nextLine();
+            if (isValidContactNumber(newContactNo)) {
+                break;
+            } else {
+                System.out.println("Invalid contact number. Please enter an 8-digit number.");
+            }
+        }
+
+        // Update personal information
         patient.updatePersonalInfo(newEmail, newContactNo);
     }
 
+    // Helper method to validate email format
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[\\w-\\.]+@[\\w-\\.]+\\.([a-z]{2,3})$"; // Simplified regex pattern for email validation
+        return email.matches(emailRegex);
+    }
+
+    // Helper method to validate contact number format
+    private boolean isValidContactNumber(String contactNo) {
+        String contactNoRegex = "^\\d{8}$"; // Ensures exactly 8 digits
+        return contactNo.matches(contactNoRegex);
+    }
+
+
     private void viewAvailableAppointmentSlots() {
-        System.out.print("Enter Doctor ID: ");
-        String doctorID = sc.nextLine();
-        System.out.print("Enter date (e.g., DD-MM-YY): ");
-        String date = sc.nextLine();
-        patient.viewAvailableAppointmentSlots(doctorID, date);
+        Scanner scanner = new Scanner(System.in);
+        String doctorID;
+        String date;
+        int flag = 0;
+
+        // Step 1: Validate Doctor ID
+        while (true) {
+            System.out.print("Enter Doctor ID: ");
+            doctorID = scanner.nextLine();
+            if (appointmentService.isValidDoctorID(doctorID)) {
+                break;
+            } else {
+                System.out.println("Invalid Doctor ID. Please enter a valid Doctor ID.");
+            }
+        }
+
+        // Step 2: Validate Date and Check Availability
+        while (true) {
+            System.out.print("Enter the date (e.g., DD-MM-YY): ");
+            date = scanner.nextLine();
+            if (appointmentService.isValidDateFormat(date) && appointmentService.isDoctorAvailableOnDate(doctorID, date)) {
+                break;
+            } else if (!appointmentService.isValidDateFormat(date)) {
+                System.out.println("Invalid date format. Please use DD-MM-YY.");
+            } else {
+                System.out.println("The doctor is not available on this date. Please choose another date.");
+                flag=1;
+                break;
+            }
+        }
+        if (flag!=1){
+            patient.viewAvailableAppointmentSlots(doctorID, date);
+        }
     }
 
     private void scheduleAppointment() {

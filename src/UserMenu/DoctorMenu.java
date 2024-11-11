@@ -15,7 +15,7 @@ import Appointment.AppointmentService;
 public class DoctorMenu extends AbstractMenu {
     private Doctor doctor;
     private Scanner sc;
-    private static final List<String> VALID_PRESCRIPTIONS = List.of("Paracetamol", "Ibuprofen", "Amoxicillin");
+    private static final List<String> VALID_PRESCRIPTIONS = List.of("Paracetamol", "Ibuprofen", "Amoxicillin","Na");
     private static final String APPOINTMENT_FILE = "src/Files/Appointment.csv";
     private AppointmentService appointmentService = new AppointmentService();
 
@@ -146,7 +146,7 @@ public class DoctorMenu extends AbstractMenu {
 
         String prescription;
         while (true) {
-            System.out.print("Enter new prescription (Paracetamol, Ibuprofen, Amoxicillin): ");
+            System.out.print("Enter new prescription (Paracetamol, Ibuprofen, Amoxicillin, NA): ");
             prescription = sc.nextLine().trim();
             if (isValidPrescription(prescription)) {
                 prescription = capitalizeFirstLetter(prescription);
@@ -311,16 +311,24 @@ public class DoctorMenu extends AbstractMenu {
 
     private void recordAppointmentOutcome() {
         String appointmentID;
+
+        // Prompt user to enter an Appointment ID and validate it
         while (true) {
             System.out.print("Enter Appointment ID: ");
             appointmentID = sc.nextLine();
             if (isValidAppointmentID(appointmentID)) {
+                // Check if the appointment ID already exists in the CSV file
+                if (isAppointmentOutcomeRecorded(appointmentID)) {
+                    System.out.println("Outcome already recorded. Please go to Update Patient Medical Records instead.");
+                    return;
+                }
                 break;
             } else {
                 System.out.println("Invalid Appointment ID. Please enter a valid ID.");
             }
         }
 
+        // Get correct appointment date for validation
         String correctDate = getCorrectAppointmentDate(appointmentID);
         if (correctDate == null) {
             System.out.println("No appointment found with ID: " + appointmentID);
@@ -332,7 +340,7 @@ public class DoctorMenu extends AbstractMenu {
 
         String prescription;
         while (true) {
-            System.out.print("Enter prescription medicine (Paracetamol, Ibuprofen, Amoxicillin): ");
+            System.out.print("Enter prescription medicine (Paracetamol, Ibuprofen, Amoxicillin, NA): ");
             prescription = sc.nextLine().trim();
             if (isValidPrescription(prescription)) {
                 prescription = capitalizeFirstLetter(prescription);
@@ -384,6 +392,23 @@ public class DoctorMenu extends AbstractMenu {
 
         doctor.recordAppointmentOutcome(appointmentID, diagnosis, prescription, quantity, treatmentPlan, date, typeOfService, notes);
     }
+
+    // Method to check if the appointment outcome is already recorded
+    private boolean isAppointmentOutcomeRecorded(String appointmentID) {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/Files/AppointmentRecord.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length > 0 && values[0].equals(appointmentID)) {
+                    return true; // Appointment outcome already recorded
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading AppointmentRecord.csv: " + e.getMessage());
+        }
+        return false; // Appointment outcome not recorded
+    }
+
 
     private boolean isValidPrescription(String prescription) {
         return VALID_PRESCRIPTIONS.contains(capitalizeFirstLetter(prescription));

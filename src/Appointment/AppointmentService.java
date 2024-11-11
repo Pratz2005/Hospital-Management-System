@@ -19,18 +19,18 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         String date;
         String timeSlot;
 
-        // Step 1: Validate Doctor ID
+        // Step 1: Validate Doctor ID with slot availability check
         while (true) {
             System.out.print("Enter Doctor ID: ");
             doctorID = scanner.nextLine();
-            if (isValidDoctorID(doctorID)) {
+            if (isValidDoctorID(doctorID) && hasAvailableSlots(doctorID)) {
                 break;
             } else {
-                System.out.println("Invalid Doctor ID. Please enter a valid Doctor ID.");
+                System.out.println("The selected doctor has no available slots. Please choose another doctor.");
             }
         }
 
-        // Step 2: Validate Date and Check Availability
+        // Step 2: Validate Date and Check Slot Availability on the Date
         while (true) {
             System.out.print("Enter the date (e.g., DD-MM-YY): ");
             date = scanner.nextLine();
@@ -39,7 +39,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             } else if (!isValidDateFormat(date)) {
                 System.out.println("Invalid date format. Please use DD-MM-YY.");
             } else {
-                System.out.println("The doctor is not available on this date. Please choose another date.");
+                System.out.println("The doctor is not available on this date or has no available slots. Please choose another date.");
             }
         }
 
@@ -47,8 +47,10 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         while (true) {
             System.out.print("Enter the time slot (e.g., 09:00): ");
             timeSlot = scanner.nextLine();
-            timeSlot = formatToHalfHourSlot(timeSlot); // Convert input time to half-hour slot format
-            if (isValidTimeSlotFormat(timeSlot) && isAvailableSlot(doctorID, date, timeSlot)) {
+            String formattedTimeSlot = formatToHalfHourSlot(timeSlot);
+
+            if (!formattedTimeSlot.isEmpty() && isValidTimeSlotFormat(formattedTimeSlot) && isAvailableSlot(doctorID, date, formattedTimeSlot)) {
+                timeSlot = formattedTimeSlot; // Use the correctly formatted time slot
                 break;
             } else {
                 System.out.println("Invalid time slot or unavailable. Please check available slots for this doctor.");
@@ -62,25 +64,90 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         return appointmentID;
     }
 
+    // Check if the doctor has any available slots
+    private boolean hasAvailableSlots(String doctorID) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(DOCTOR_AVAILABILITY_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields[0].equals(doctorID) && fields[4].equalsIgnoreCase("available")) {
+                    return true; // Doctor has at least one available slot
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading DoctorAvailability.csv: " + e.getMessage());
+        }
+        return false; // All slots are booked
+    }
+
+    // Check if the doctor has available slots on the given date
+    public boolean isDoctorAvailableOnDate(String doctorID, String date) {
+        boolean hasAvailableSlots = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader(DOCTOR_AVAILABILITY_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields[0].equals(doctorID) && fields[2].equals(date) && fields[4].equalsIgnoreCase("available")) {
+                    hasAvailableSlots = true;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading DoctorAvailability.csv: " + e.getMessage());
+        }
+        return hasAvailableSlots;
+    }
+
+
 
     // Helper method to check if Doctor ID is valid
-    private boolean isValidDoctorID(String doctorID) {
+// Checks if the doctor exists in User.csv and DoctorAvailability.csv
+    public boolean isValidDoctorID(String doctorID) {
+        // Check if doctor ID exists in User.csv
+        boolean doctorExistsInUser = false;
         try (BufferedReader reader = new BufferedReader(new FileReader(USER_FILE))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
                 if (fields[0].equals(doctorID) && fields[2].equalsIgnoreCase("Doctor")) {
-                    return true;
+                    doctorExistsInUser = true;
+                    break;
                 }
             }
         } catch (IOException e) {
             System.err.println("Error reading User.csv: " + e.getMessage());
         }
+
+        // Check if doctor ID exists in DoctorAvailability.csv
+        if (doctorExistsInUser && isDoctorInAvailability(doctorID)) {
+            return true;
+        } else if (doctorExistsInUser) {
+            System.out.println("The doctor is not available on any date.");
+        } else {
+            System.out.println("Doctor ID not found. Please enter a valid Doctor ID.");
+        }
         return false;
     }
 
+    // New helper method to check if the doctor ID exists in DoctorAvailability.csv
+    private boolean isDoctorInAvailability(String doctorID) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(DOCTOR_AVAILABILITY_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields[0].equals(doctorID)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading DoctorAvailability.csv: " + e.getMessage());
+        }
+        return false;
+    }
+
+
     // Check if the date is in DD-MM-YY format
-    private boolean isValidDateFormat(String date) {
+    public boolean isValidDateFormat(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
         dateFormat.setLenient(false);
         try {
@@ -89,22 +156,6 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         } catch (ParseException e) {
             return false;
         }
-    }
-
-    // Check if the doctor is available on the given date
-    private boolean isDoctorAvailableOnDate(String doctorID, String date) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(DOCTOR_AVAILABILITY_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split(",");
-                if (fields[0].equals(doctorID) && fields[2].equals(date) && fields[4].equalsIgnoreCase("available")) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading DoctorAvailability.csv: " + e.getMessage());
-        }
-        return false;
     }
 
     // Check if the time slot is in HH:MM-HH:MM format
@@ -362,19 +413,26 @@ public class AppointmentService extends DoctorAvailabilityService implements App
     }
 
     private String formatToHalfHourSlot(String time) {
-        String[] parts = time.split(":");
-        int hour = Integer.parseInt(parts[0]);
-        int minute = Integer.parseInt(parts[1]);
+        try {
+            String[] parts = time.split(":");
+            int hour = Integer.parseInt(parts[0]); // Attempt to parse hour
+            int minute = Integer.parseInt(parts[1]); // Attempt to parse minute
 
-        String start = String.format("%02d:%02d", hour, minute);
-        String end;
+            String start = String.format("%02d:%02d", hour, minute);
+            String end;
 
-        if (minute == 0) {
-            end = String.format("%02d:%02d", hour, 30);
-        } else {
-            end = String.format("%02d:%02d", (hour + 1) % 24, 0);
+            if (minute == 0) {
+                end = String.format("%02d:%02d", hour, 30);
+            } else {
+                end = String.format("%02d:%02d", (hour + 1) % 24, 0);
+            }
+
+            return start + "-" + end;
+
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            //System.out.println("Invalid time format. Please enter time in HH:MM format.");
+            return ""; // Return an empty string to indicate invalid format
         }
-
-        return start + "-" + end;
     }
+
 }

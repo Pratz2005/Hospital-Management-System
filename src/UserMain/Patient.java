@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.*;
 
 public class Patient extends User {
     private String patientID;
@@ -38,6 +38,8 @@ public class Patient extends User {
     }
 
     public void viewMedicalRecord() {
+        updatePastTreatmentFromCSV(); // Update pastTreatment field before viewing
+
         System.out.println("Medical Record:");
         System.out.println("Patient ID: " + patientID);
         System.out.println("Name: " + getName());
@@ -46,14 +48,94 @@ public class Patient extends User {
         System.out.println("Contact No: " + contactNo);
         System.out.println("Email: " + email);
         System.out.println("Blood Type: " + bloodType);
-        System.out.println("Past Treatment: " + pastTreatment);
+        System.out.println("Past Treatments: ");
+        System.out.println("- Appointment ID - Diagnosis - Past Treatment");
+
+        // Display each past treatment (AppointmentID, Diagnosis, and Treatment Plan)
+        if (pastTreatment.equals("N/A") || pastTreatment.isEmpty()) {
+            System.out.println("No past treatments recorded.");
+        } else {
+            String[] treatments = pastTreatment.split("; ");
+            for (String treatment : treatments) {
+                System.out.println(" - " + treatment); // Display each treatment in a new line
+            }
+        }
     }
+
+    // Update pastTreatment field by reading from Patient_List.csv
+    private void updatePastTreatmentFromCSV() {
+        String filePath = "src/Files/Patient_List.csv";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            reader.readLine(); // Skip header line
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields[0].equals(patientID)) {
+                    this.pastTreatment = fields[8]; // PastTreatment field contains AppointmentID, Diagnosis, and Treatment Plan
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Patient_List.csv: " + e.getMessage());
+        }
+    }
+
 
     public void updatePersonalInfo(String newEmail, String newContactNo) {
         this.email = newEmail;
         this.contactNo = newContactNo;
-        System.out.println("Personal information updated successfully.");
+
+        // Update the information in the CSV file
+        if (updatePatientInfoInCSV(this.patientID, newEmail, newContactNo)) {
+            System.out.println("Personal information updated successfully.");
+        } else {
+            System.out.println("Failed to update personal information in CSV file.");
+        }
     }
+
+    // Helper method to update patient information in the CSV file
+    private boolean updatePatientInfoInCSV(String patientID, String newEmail, String newContactNo) {
+        String filePath = "src/Files/Patient_List.csv";
+        List<String[]> records = new ArrayList<>();
+        boolean isUpdated = false;
+
+        // Read the CSV file and store each record in a list
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line = reader.readLine(); // Read header line
+            if (line != null) {
+                records.add(line.split(",")); // Add header to records
+            }
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                // Check if this is the record to be updated
+                if (fields[0].equals(patientID)) {
+                    fields[5] = newContactNo; // Update contact number
+                    fields[6] = newEmail; // Update email
+                    isUpdated = true;
+                }
+                records.add(fields);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Patient_List.csv: " + e.getMessage());
+            return false;
+        }
+
+        // Write the updated records back to the CSV file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String[] record : records) {
+                writer.write(String.join(",", record));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing to Patient_List.csv: " + e.getMessage());
+            return false;
+        }
+
+        return isUpdated;
+    }
+
 
     public void viewAvailableAppointmentSlots(String doctorID, String date) {
         String[] availableSlots = availabilityManager.viewDoctorAvailability(doctorID, date);

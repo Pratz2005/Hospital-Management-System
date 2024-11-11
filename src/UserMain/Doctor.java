@@ -48,6 +48,9 @@ public class Doctor extends User {
         if (updated) {
             saveAppointmentRecords(records);
             System.out.println("Patient medical record updated successfully.");
+
+            // Update the past treatment in Patient_List.csv
+            updatePatientPastTreatment(appointmentID, newDiagnosis, newTreatmentPlan);
         } else {
             System.out.println("Appointment ID not found.");
         }
@@ -125,7 +128,93 @@ public class Doctor extends User {
 
         // Update the appointment status to "completed" in Appointment.csv
         updateAppointmentStatus(appointmentID, "completed");
+
+        // Update Patient_List.csv with the new diagnosis and treatment plan as past treatment
+        updatePatientPastTreatment(appointmentID, diagnosis, treatmentPlan);
     }
+
+    private void updatePatientPastTreatment(String appointmentID, String diagnosis, String treatmentPlan) {
+        String patientFilePath = "src/Files/Patient_List.csv";
+        String patientID = getPatientIDByAppointment(appointmentID);
+
+        if (patientID == null) {
+            System.out.println("No patient found for Appointment ID: " + appointmentID);
+            return;
+        }
+
+        List<String[]> records = new ArrayList<>();
+        boolean isUpdated = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(patientFilePath))) {
+            String line;
+            records.add(reader.readLine().split(",")); // Add header to records
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields[0].equals(patientID)) {
+                    // If `Past Treatments` already contains this appointment ID, update it; otherwise, append it
+                    String pastTreatments = fields[8];
+                    String[] treatmentsArray = pastTreatments.split("; ");
+                    StringBuilder updatedTreatments = new StringBuilder();
+
+                    boolean found = false;
+                    for (String treatment : treatmentsArray) {
+                        if (treatment.startsWith(appointmentID + "-")) {
+                            updatedTreatments.append(appointmentID).append(" - ").append(diagnosis).append("- ").append(treatmentPlan);
+                            found = true;
+                        } else {
+                            updatedTreatments.append(treatment);
+                        }
+                        updatedTreatments.append("; ");
+                    }
+
+                    // If the appointment was not found, add it as a new entry
+                    if (!found) {
+                        updatedTreatments.append(appointmentID).append("- ").append(diagnosis).append("- ").append(treatmentPlan);
+                    } else {
+                        // Remove the trailing "; "
+                        updatedTreatments.setLength(updatedTreatments.length() - 2);
+                    }
+
+                    fields[8] = updatedTreatments.toString(); // Update the PastTreatment field
+                    isUpdated = true;
+                }
+                records.add(fields);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Patient_List.csv: " + e.getMessage());
+        }
+
+        if (isUpdated) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(patientFilePath))) {
+                for (String[] record : records) {
+                    writer.write(String.join(",", record));
+                    writer.newLine();
+                }
+                //System.out.println("Patient's past treatments updated successfully in Patient_List.csv.");
+            } catch (IOException e) {
+                System.err.println("Error writing to Patient_List.csv: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Patient record not found.");
+        }
+    }
+
+    private String getPatientIDByAppointment(String appointmentID) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields[0].equals(appointmentID)) {
+                    return fields[2]; // Patient ID is the third column in Appointment.csv
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+        }
+        return null;
+    }
+
 
     private void updateAppointmentStatus(String appointmentID, String newStatus) {
         List<String[]> appointments = loadAppointments();
