@@ -47,6 +47,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         while (true) {
             System.out.print("Enter the time slot (e.g., 09:00): ");
             timeSlot = scanner.nextLine();
+            timeSlot = formatToHalfHourSlot(timeSlot); // Convert input time to half-hour slot format
             if (isValidTimeSlotFormat(timeSlot) && isAvailableSlot(doctorID, date, timeSlot)) {
                 break;
             } else {
@@ -57,7 +58,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         // Generate and save appointment details
         String appointmentID = generateAppointmentID();
         saveAppointmentDetails(appointmentID, doctorID, patientID, date, timeSlot, "pending");
-
+        updateSlotStatus(doctorID, date, timeSlot, "booked");
         return appointmentID;
     }
 
@@ -106,11 +107,12 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         return false;
     }
 
-    // Check if the time slot is in HH:MM format
+    // Check if the time slot is in HH:MM-HH:MM format
     private boolean isValidTimeSlotFormat(String timeSlot) {
-        String timeSlotPattern = "^\\d{2}:\\d{2}$";
+        String timeSlotPattern = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$";
         return Pattern.matches(timeSlotPattern, timeSlot);
     }
+
 
     // Check availability in DoctorAvailability.csv
     private boolean isAvailableSlot(String doctorID, String date, String timeSlot) {
@@ -118,11 +120,8 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data[0].equals(doctorID) && data[2].equals(date) && data[4].equalsIgnoreCase("available")) {
-                    String[] slotRange = data[3].split("-");
-                    if (slotRange.length == 2 && slotRange[0].equals(timeSlot)) {
-                        return true;
-                    }
+                if (data[0].equals(doctorID) && data[2].equals(date) && data[3].equals(timeSlot) && data[4].equalsIgnoreCase("available")) {
+                    return true;
                 }
             }
         } catch (IOException e) {
@@ -130,6 +129,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         }
         return false;
     }
+
 
     // Generate a unique Appointment ID
     private String generateAppointmentID() {
@@ -199,6 +199,9 @@ public class AppointmentService extends DoctorAvailabilityService implements App
         for (String[] appointment : appointments) {
             if (appointment[0].equals(appointmentID)) {
                 String doctorID = appointment[1];
+                // Save the old date and time slot before updating
+                String oldDate = appointment[3];
+                String oldTimeSlot = appointment[4];
 
                 // Step 1: Validate New Date and Check Availability
                 String newDate;
@@ -219,6 +222,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
                 while (true) {
                     System.out.print("Enter the new time slot (e.g., 09:00): ");
                     newTimeSlot = scanner.nextLine();
+                    newTimeSlot = formatToHalfHourSlot(newTimeSlot);
                     if (isValidTimeSlotFormat(newTimeSlot) && isAvailableSlot(doctorID, newDate, newTimeSlot)) {
                         break;
                     } else {
@@ -233,6 +237,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
                 appointment[5] = "pending";
                 updateDoctorAvailability(doctorID, doctorName, newDate, newTimeSlot, false);
                 valid = true;
+                rescheduleSlotStatus(doctorID, oldDate, oldTimeSlot, newDate, newTimeSlot);
                 break;
             }
         }
@@ -259,6 +264,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
                 // Update the appointment status to canceled
                 appointment[5] = "canceled";
                 appointmentFound = true;
+                updateSlotStatus(doctorID, date, timeSlot, "available");
 
                 break;
             }
@@ -282,5 +288,93 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             }
         }
         return "Appointment not found.";
+    }
+
+    // Method to update the status of a specific slot
+    public void updateSlotStatus(String doctorID, String date, String timeSlot, String newStatus) {
+        List<String[]> availabilityData = loadDoctorAvailability();
+        boolean slotUpdated = false;
+
+        for (String[] entry : availabilityData) {
+            if (entry[0].equals(doctorID) && entry[2].equals(date) && entry[3].equals(timeSlot)) {
+                entry[4] = newStatus; // Update status to either "available" or "booked"
+                slotUpdated = true;
+                break;
+            }
+        }
+
+        if (slotUpdated) {
+            saveDoctorAvailability(availabilityData);
+        } else {
+            System.out.println("Slot not found in DoctorAvailability.csv.");
+        }
+    }
+
+    // Method to update the status for rescheduling an appointment
+    private void rescheduleSlotStatus(String doctorID, String oldDate, String oldTimeSlot, String newDate, String newTimeSlot) {
+        List<String[]> availabilityData = loadDoctorAvailability();
+        boolean oldSlotUpdated = false;
+        boolean newSlotUpdated = false;
+
+        for (String[] entry : availabilityData) {
+            if (entry[0].equals(doctorID) && entry[2].equals(oldDate) && entry[3].equals(oldTimeSlot)) {
+                entry[4] = "available"; // Set the old slot to "available"
+                oldSlotUpdated = true;
+            }
+            if (entry[0].equals(doctorID) && entry[2].equals(newDate) && entry[3].equals(newTimeSlot)) {
+                entry[4] = "booked"; // Set the new slot to "unavailable"
+                newSlotUpdated = true;
+            }
+        }
+
+        if (oldSlotUpdated && newSlotUpdated) {
+            saveDoctorAvailability(availabilityData);
+        } else {
+            //System.out.println("One or both slots not found in DoctorAvailability.csv.");
+        }
+    }
+
+    // Helper method to load DoctorAvailability.csv into a List of String arrays
+    private List<String[]> loadDoctorAvailability() {
+        List<String[]> availabilityData = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(DOCTOR_AVAILABILITY_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                availabilityData.add(line.split(","));
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading DoctorAvailability.csv: " + e.getMessage());
+        }
+        return availabilityData;
+    }
+
+    // Helper method to save the updated availability data back to DoctorAvailability.csv
+    private void saveDoctorAvailability(List<String[]> availabilityData) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DOCTOR_AVAILABILITY_FILE))) {
+            for (String[] entry : availabilityData) {
+                writer.write(String.join(",", entry));
+                writer.newLine();
+            }
+            //System.out.println("Doctor availability saved successfully."); // Debugging output
+        } catch (IOException e) {
+            System.err.println("Error saving DoctorAvailability.csv: " + e.getMessage());
+        }
+    }
+
+    private String formatToHalfHourSlot(String time) {
+        String[] parts = time.split(":");
+        int hour = Integer.parseInt(parts[0]);
+        int minute = Integer.parseInt(parts[1]);
+
+        String start = String.format("%02d:%02d", hour, minute);
+        String end;
+
+        if (minute == 0) {
+            end = String.format("%02d:%02d", hour, 30);
+        } else {
+            end = String.format("%02d:%02d", (hour + 1) % 24, 0);
+        }
+
+        return start + "-" + end;
     }
 }

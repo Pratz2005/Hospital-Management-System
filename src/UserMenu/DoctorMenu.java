@@ -9,12 +9,15 @@ import java.util.List;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
+import Appointment.AppointmentService;
+
 
 public class DoctorMenu extends AbstractMenu {
     private Doctor doctor;
     private Scanner sc;
     private static final List<String> VALID_PRESCRIPTIONS = List.of("Paracetamol", "Ibuprofen", "Amoxicillin");
     private static final String APPOINTMENT_FILE = "src/Files/Appointment.csv";
+    private AppointmentService appointmentService = new AppointmentService();
 
     public DoctorMenu(Doctor doctor) {
         this.doctor = doctor;
@@ -285,6 +288,7 @@ public class DoctorMenu extends AbstractMenu {
                             } else if (response == 2) {
                                 doctor.declineAppointment(appointmentID);
                                 System.out.println("Appointment declined.");
+                                appointmentService.updateSlotStatus(doctorID, date, timeSlot, "available");
                                 break;
                             } else {
                                 System.out.println("Invalid option. Please enter 1 to accept or 2 to decline.");

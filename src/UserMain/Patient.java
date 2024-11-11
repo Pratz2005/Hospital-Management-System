@@ -79,7 +79,6 @@ public class Patient extends User {
 
     public void cancelAppointment(String appointmentID) {
         appointmentManager.cancelAppointment(appointmentID);
-        System.out.println("Appointment canceled successfully.");
     }
 
     public void viewScheduledAppointments(String appointmentID) {
