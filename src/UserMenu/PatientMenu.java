@@ -198,7 +198,7 @@ public class PatientMenu extends AbstractMenu {
     }
 
     // Helper method to validate the appointment ID and its status
-    private boolean isValidAppointmentForCancellation(String appointmentID) {
+    public boolean isValidAppointmentForCancellation(String appointmentID) {
         String appointmentFile = "src/Files/Appointment.csv";
 
         try (BufferedReader reader = new BufferedReader(new FileReader(appointmentFile))) {

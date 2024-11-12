@@ -7,70 +7,9 @@ import java.util.Scanner;
 
 public class Administrator {
 
-    private static final String STAFF_FILE_PATH = "Staff_List.csv";
+    private static final String STAFF_FILE_PATH = "src/Files/Staff.csv";
     private static final String APPOINTMENT_FILE_PATH = "Appointments.csv";
-    private static final String MEDICINE_FILE_PATH = "Medicine_List.csv"; 
-
-    // Method to manage hospital staff (add, remove, update)
-    public void manageHospitalStaff() throws IOException {
-        Scanner scanner = new Scanner(System.in);
-
-        while (true) {
-            System.out.println("Manage Hospital Staff:");
-            System.out.println("1. View Staff List");
-            System.out.println("2. Add Staff");
-            System.out.println("3. Update Staff");
-            System.out.println("4. Remove Staff");
-            System.out.println("5. Exit");
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
-
-            switch (choice) {
-                case 1:
-                    viewStaffList();
-                    break;
-                case 2:
-                    scanner.nextLine(); // Consume newline
-                    System.out.print("Enter Staff ID (e.g., D001): ");
-                    String id = scanner.nextLine();
-                    System.out.print("Enter Staff Name: ");
-                    String name = scanner.nextLine();
-                    System.out.print("Enter Staff Role: ");
-                    String role = scanner.nextLine();
-                    System.out.print("Enter Staff Gender: ");
-                    String gender = scanner.nextLine();
-                    System.out.print("Enter Staff Age: ");
-                    int age = scanner.nextInt();
-                    addStaff(id, name, role, gender, age);
-                    break;
-                case 3:
-                    scanner.nextLine(); // Consume newline
-                    System.out.print("Enter Staff ID to update: ");
-                    String updateId = scanner.nextLine();
-                    System.out.print("Enter new Staff Name: ");
-                    String newName = scanner.nextLine();
-                    System.out.print("Enter new Staff Role: ");
-                    String newRole = scanner.nextLine();
-                    System.out.print("Enter new Staff Gender: ");
-                    String newGender = scanner.nextLine();
-                    System.out.print("Enter new Staff Age: ");
-                    int newAge = scanner.nextInt();
-                    updateStaff(updateId, newName, newRole, newGender, newAge);
-                    break;
-                case 4:
-                    scanner.nextLine(); // Consume newline
-                    System.out.print("Enter Staff ID to remove: ");
-                    String removeId = scanner.nextLine();
-                    removeStaff(removeId);
-                    break;
-                case 5:
-                    System.out.println("Exiting...");
-                    return;
-                default:
-                    System.out.println("Invalid choice, please try again.");
-            }
-        }
-    }
+    private static final String MEDICINE_FILE_PATH = "Medicine_List.csv";
 
     // Method to view the staff list
     public void viewStaffList() throws IOException {
@@ -229,8 +168,8 @@ public class Administrator {
     }
 
     // Method to approve replenishment requests
-    public void approveReplenishmentRequests(Pharmacist pharmacist, Scanner scanner) throws IOException {
-        List<String[]> requests = pharmacist.getReplenishmentRequests();
+    /*public void approveReplenishmentRequests(Pharmacist pharmacist, Scanner scanner) throws IOException {
+        //List<String[]> requests = pharmacist.getReplenishmentRequests();
 
         // Check if there are any requests to approve
         if (requests.isEmpty()) {
@@ -259,7 +198,7 @@ public class Administrator {
         } else {
             System.out.println("Invalid request index.");
         }
-    }
+    }*/
 
 
 

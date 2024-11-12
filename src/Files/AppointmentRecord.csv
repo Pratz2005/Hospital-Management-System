@@ -2,7 +2,7 @@ appointmentID,diagnosis,prescriptionMedicine,prescriptionQuantity,prescriptionSt
 AP330,No sick,Ibuprofen,3,pending,No sick,11-11-24,xray,NA
 
 AP970,VVVSick,Paracetamol,30,pending,have med,11-11-24,consultation,fwfefef
-AP523,na,Ibuprofen,1,pending,na,11-11-24,consultatiomn,na
+AP523,na,Ibuprofen,1,dispensed,na,11-11-24,consultatiomn,na
 AP718,tanya,Paracetamol,78,pending,reAD ME,11-11-24,ba,na
 AP139,not sick,Paracetamol,2,pending,Stay hydrated,11-11-24,x-ray,na
 AP865,sick,Paracetamol,2,pending,get rest,11-11-24,x-ray,na
