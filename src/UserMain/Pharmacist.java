@@ -20,7 +20,7 @@ public class Pharmacist extends User {
     public void viewAppointmentOutcome(String appointmentID) {
         String appointmentFilePath = "src/Files/Appointment.csv";
         String recordFilePath = "src/Files/AppointmentRecord.csv";
-        System.out.println("Past Appointment Outcome for Appointment ID: " + appointmentID);
+        System.out.println("Appointment Outcome for Appointment ID: " + appointmentID);
 
         // Step 1: Verify that the appointment is completed for this ID in Appointment.csv
         boolean isCompleted = false;
@@ -89,7 +89,7 @@ public class Pharmacist extends User {
             }
 
             if (!hasRecord) {
-                System.out.println("No past appointment record found in AppointmentRecord.csv for the given appointment ID.");
+                System.out.println("No past appointment record found for the given appointment ID.");
             }
         } catch (IOException e) {
             System.err.println("Error reading AppointmentRecord.csv: " + e.getMessage());

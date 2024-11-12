@@ -5,17 +5,13 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.util.Set;
 
 public class AdministratorMenu extends AbstractMenu {
     private Administrator admin;
-
     public AdministratorMenu(Administrator admin) {
         this.admin = admin;
     }
@@ -48,15 +44,15 @@ public class AdministratorMenu extends AbstractMenu {
                         break;
                     case 2:
                         // View appointment details logic
-                        System.out.println("A2");
+                        viewAppointmentDetailsInput();
                         break;
                     case 3:
                         // View/manage medication inventory logic
-                        System.out.println("A3");
+                        viewAndManageMedicationInventory();
                         break;
                     case 4:
                         // Approve replenishment requests logic
-                        System.out.println("A4");
+                        admin.approveReplenishmentRequests();
                         break;
                     case 5:
                         System.out.println("Logging out...");
@@ -281,4 +277,147 @@ public class AdministratorMenu extends AbstractMenu {
         return Pattern.matches("^[A-Za-z ]+$", name);
     }
 
+    // Method to prompt for Appointment ID input, validate it, and view appointment details
+    private void viewAppointmentDetailsInput() {
+        Scanner scanner = new Scanner(System.in);
+        String appointmentID;
+
+        while (true) {
+            System.out.print("Enter Appointment ID (e.g., AP001): ");
+            appointmentID = scanner.nextLine().trim();
+
+            // Check if format is correct
+            if (!isProperAppointmentIDFormat(appointmentID)) {
+                System.out.println("Invalid Appointment ID format. Please ensure it starts with 'AP' followed by three digits.");
+                continue;
+            }
+
+            // Check if Appointment ID exists in Appointment.csv
+            if (!isAppointmentIDExists(appointmentID)) {
+                System.out.println("Appointment ID not found. Please try again.");
+                continue;
+            }
+
+            // If both checks pass, view the appointment details
+            admin.viewAppointmentDetails(appointmentID);
+            break;
+        }
+    }
+
+    // Check if Appointment ID format is correct (e.g., "AP" followed by three digits)
+    private boolean isProperAppointmentIDFormat(String appointmentID) {
+        return appointmentID.matches("^AP\\d{3}$");
+    }
+
+    // Check if the Appointment ID exists in Appointment.csv
+    private boolean isAppointmentIDExists(String appointmentID) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/Files/Appointment.csv"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data[0].equals(appointmentID)) {
+                    return true; // Appointment ID exists
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading Appointment.csv: " + e.getMessage());
+        }
+        return false; // Appointment ID does not exist
+    }
+
+    public void viewAndManageMedicationInventory() {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        // Set of valid medications (case-insensitive)
+        final Set<String> validMedications = Set.of("PARACETAMOL", "IBUPROFEN", "AMOXICILLIN");
+
+        System.out.println("View and Manage Medication Inventory:");
+        System.out.println("1. View Medication Inventory");
+        System.out.println("2. Update Medication Stock");
+        System.out.println("3. Update Low Stock Level");
+        System.out.println("4. Exit");
+
+        while (true) {
+
+            System.out.print("Enter your choice: ");
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                switch (choice) {
+                    case 1:
+                        try {
+                            admin.viewMedicationInventory();
+                        } catch (IOException e) {
+                            System.out.println("Error viewing medication inventory: " + e.getMessage());
+                        }
+                        break;
+
+                    case 2:
+                        String medicineName = getValidatedMedicineName(scanner, validMedications);
+                        int newStockLevel = getValidatedNumberInput(scanner, "Enter the new stock level: ");
+                        try {
+                            admin.updateMedicationStock(medicineName, newStockLevel);
+                        } catch (IOException e) {
+                            System.out.println("Error updating stock level: " + e.getMessage());
+                        }
+                        break;
+
+                    case 3:
+                        String medName = getValidatedMedicineName(scanner, validMedications);
+                        int newLowStockLevel = getValidatedNumberInput(scanner, "Enter the new low stock level alert: ");
+                        try {
+                            admin.updateLowStockLevel(medName, newLowStockLevel);
+                        } catch (IOException e) {
+                            System.out.println("Error updating low stock level: " + e.getMessage());
+                        }
+                        break;
+
+                    case 4:
+                        System.out.println("Exiting medication inventory management...");
+                        return;
+
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Clear invalid input
+            }
+        }
+    }
+
+    // Method to validate medication name input
+    private String getValidatedMedicineName(Scanner scanner, Set<String> validMedications) {
+        String medicineName;
+        while (true) {
+            System.out.print("Enter the name of the medication: ");
+            medicineName = scanner.nextLine().trim();
+
+            if (validMedications.contains(medicineName.toUpperCase())) {
+                return medicineName;
+            } else {
+                System.out.println("Invalid medication name. Please enter 'Paracetamol', 'Ibuprofen', or 'Amoxicillin'.");
+            }
+        }
+    }
+
+    // Method to validate numeric input for stock levels
+    private int getValidatedNumberInput(Scanner scanner, String prompt) {
+        int number;
+        while (true) {
+            System.out.print(prompt);
+            if (scanner.hasNextInt()) {
+                number = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                return number;
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.nextLine(); // Clear invalid input
+            }
+        }
+    }
+
 }
+
