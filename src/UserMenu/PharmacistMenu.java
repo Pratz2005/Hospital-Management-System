@@ -7,9 +7,12 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.List;
 
+import enums.MedicineList;
+import enums.PrescriptionStatus;
+
 public class PharmacistMenu extends AbstractMenu {
     private Pharmacist pharmacist;
-    private static final List<String> VALID_PRESCRIPTIONS = List.of("Paracetamol", "Ibuprofen", "Amoxicillin");
+    private static final List<String> VALID_PRESCRIPTIONS = List.of(MedicineList.AMOXICILLIN.name(), MedicineList.IBUPROFEN.name(),MedicineList.PARACETAMOL.name());
 
     public PharmacistMenu(Pharmacist pharmacist) {
         this.pharmacist = pharmacist;
@@ -94,7 +97,7 @@ public class PharmacistMenu extends AbstractMenu {
 
     // Check if the appointment exists and is completed for viewing
     public boolean isValidAppointmentForViewing(String appointmentID) {
-        String appointmentFile = "src/Files/Appointment.csv";
+        String appointmentFile = "resources/Appointment.csv";
 
         try (BufferedReader reader = new BufferedReader(new FileReader(appointmentFile))) {
             String line = reader.readLine(); // Skip header line
@@ -116,7 +119,7 @@ public class PharmacistMenu extends AbstractMenu {
 
     // Check if the appointment exists and is pending for updating
     public boolean isValidAppointmentForUpdating(String appointmentID) {
-        String appointmentFile = "src/Files/AppointmentRecord.csv";
+        String appointmentFile = "resources/AppointmentRecord.csv";
 
         try (BufferedReader reader = new BufferedReader(new FileReader(appointmentFile))) {
             String line = reader.readLine(); // Skip header line
@@ -125,7 +128,7 @@ public class PharmacistMenu extends AbstractMenu {
                 String[] fields = line.split(",");
 
                 // Check if the appointment ID matches and status is "pending"
-                if (fields[0].equals(appointmentID) && fields[4].equalsIgnoreCase("pending")) {
+                if (fields[0].equals(appointmentID) && fields[4].equalsIgnoreCase(PrescriptionStatus.PENDING.name())) {
                     return true; // Valid appointment ID for updating
                 }
             }
@@ -136,14 +139,15 @@ public class PharmacistMenu extends AbstractMenu {
         return false; // Appointment ID is invalid or status is not "pending"
     }
 
-    private void SubmitReplenishmentRequest(){
+    private void SubmitReplenishmentRequest() {
         String prescription;
         while (true) {
             System.out.print("Enter medicine name for replenishment (Paracetamol, Ibuprofen, Amoxicillin): ");
             prescription = sc.nextLine();
 
+            // Use the case-insensitive check
             if (isValidPrescription(prescription)) {
-                prescription = capitalizeFirstLetter(prescription);
+                prescription = prescription.toUpperCase(); // Convert to uppercase to match enum format
                 break; // Valid medicine name entered, exit the loop
             } else {
                 System.out.println("Invalid medicine name. Please enter a valid name.");
@@ -170,9 +174,12 @@ public class PharmacistMenu extends AbstractMenu {
 
         pharmacist.submitReplenishmentRequest(prescription, quantity);
     }
+
     private boolean isValidPrescription(String prescription) {
-        return VALID_PRESCRIPTIONS.contains(capitalizeFirstLetter(prescription));
+        // Convert the input to uppercase to match the enum constants
+        return VALID_PRESCRIPTIONS.contains(prescription.toUpperCase());
     }
+
     private String capitalizeFirstLetter(String text) {
         if (text == null || text.isEmpty()) return text;
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();

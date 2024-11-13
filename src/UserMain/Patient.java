@@ -1,5 +1,6 @@
 package UserMain;
 
+import enums.AppointmentStatus;
 import Appointment.AppointmentManager;
 import Appointment.DoctorAvailabilityManager;
 import java.io.BufferedReader;
@@ -64,7 +65,7 @@ public class Patient extends User {
 
     // Update pastTreatment field by reading from Patient_List.csv
     private void updatePastTreatmentFromCSV() {
-        String filePath = "src/Files/Patient_List.csv";
+        String filePath = "resources/Patient_List.csv";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             reader.readLine(); // Skip header line
@@ -96,7 +97,7 @@ public class Patient extends User {
 
     // Helper method to update patient information in the CSV file
     private boolean updatePatientInfoInCSV(String patientID, String newEmail, String newContactNo) {
-        String filePath = "src/Files/Patient_List.csv";
+        String filePath = "resources/Patient_List.csv";
         List<String[]> records = new ArrayList<>();
         boolean isUpdated = false;
 
@@ -169,8 +170,8 @@ public class Patient extends User {
     }
 
     public void viewPastAppointmentOutcome() {
-        String appointmentFilePath = "src/Files/Appointment.csv";
-        String recordFilePath = "src/Files/AppointmentRecord.csv";
+        String appointmentFilePath = "resources/Appointment.csv";
+        String recordFilePath = "resources/AppointmentRecord.csv";
         System.out.println("Past Appointment Outcomes for Patient ID: " + patientID);
 
         // List to store completed appointment IDs for this patient
@@ -194,7 +195,7 @@ public class Patient extends User {
                 String status = fields[5];
 
                 // If the appointment is completed for the current patient, store the appointmentID
-                if (appointmentPatientID.equals(patientID) && status.equalsIgnoreCase("completed")) {
+                if (appointmentPatientID.equals(patientID) && status.equalsIgnoreCase(AppointmentStatus.COMPLETED.name())) {
                     completedAppointments.add(appointmentID);
                 }
             }

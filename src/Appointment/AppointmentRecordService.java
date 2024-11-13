@@ -1,10 +1,11 @@
 package Appointment;
 
+import enums.AppointmentStatus;
 import java.io.*;
 import java.util.*;
 
 public class AppointmentRecordService {
-    private static final String APPOINTMENT_RECORD_FILE = "src/Files/AppointmentRecord.csv";
+    private static final String APPOINTMENT_RECORD_FILE = "resources/AppointmentRecord.csv";
     public void addAppointmentOutcomeRecord(
             String appointmentID,
             String diagnosis,
@@ -22,7 +23,7 @@ public class AppointmentRecordService {
                     diagnosis,
                     prescriptionMedicine,
                     String.valueOf(prescriptionQuantity),
-                    "pending", // Prescription status is initially set to "pending"
+                    AppointmentStatus.PENDING.name(), // Prescription status is initially set to "pending"
                     treatmentPlan,
                     date,
                     typeOfService,
@@ -38,7 +39,7 @@ public class AppointmentRecordService {
 
         for (String[] appointment : appointments) {
             if (appointment[0].equals(appointmentID)) {
-                appointment[5] = "completed"; // Update the Status column (index 5) to "completed"
+                appointment[5] = AppointmentStatus.COMPLETED.name(); // Update the Status column (index 5) to "completed"
                 break;
             }
         }
@@ -52,7 +53,7 @@ public class AppointmentRecordService {
      */
     private List<String[]> loadAppointments() {
         List<String[]> appointments = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/Files/Appointment.csv"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("resources/Appointment.csv"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 appointments.add(line.split(","));
@@ -67,7 +68,7 @@ public class AppointmentRecordService {
      * Saves the updated appointments back to Appointment.csv.
      */
     private void saveAppointments(List<String[]> appointments) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/Files/Appointment.csv"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("resources/Appointment.csv"))) {
             for (String[] appointment : appointments) {
                 writer.write(String.join(",", appointment));
                 writer.newLine();

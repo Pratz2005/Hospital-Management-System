@@ -1,5 +1,8 @@
 package Appointment;
 
+import enums.AppointmentStatus;
+import enums.UserRole;
+import enums.DoctorAvailabilityStatus;
 import java.io.*;
 import java.util.*;
 import java.util.Random;
@@ -8,9 +11,9 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
 
 public class AppointmentService extends DoctorAvailabilityService implements AppointmentManager {
-    private static final String APPOINTMENT_FILE = "src/Files/Appointment.csv";
-    private static final String USER_FILE = "src/Files/User.csv";
-    private static final String DOCTOR_AVAILABILITY_FILE = "src/Files/DoctorAvailability.csv";
+    private static final String APPOINTMENT_FILE = "resources/Appointment.csv";
+    private static final String USER_FILE = "resources/User.csv";
+    private static final String DOCTOR_AVAILABILITY_FILE = "resources/DoctorAvailability.csv";
 
     @Override
     public String scheduleAppointment(String patientID) {
@@ -59,8 +62,8 @@ public class AppointmentService extends DoctorAvailabilityService implements App
 
         // Generate and save appointment details
         String appointmentID = generateAppointmentID();
-        saveAppointmentDetails(appointmentID, doctorID, patientID, date, timeSlot, "pending");
-        updateSlotStatus(doctorID, date, timeSlot, "booked");
+        saveAppointmentDetails(appointmentID, doctorID, patientID, date, timeSlot, AppointmentStatus.PENDING.name());
+        updateSlotStatus(doctorID, date, timeSlot, DoctorAvailabilityStatus.BOOKED.name());
         return appointmentID;
     }
 
@@ -70,7 +73,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
-                if (fields[0].equals(doctorID) && fields[4].equalsIgnoreCase("available")) {
+                if (fields[0].equals(doctorID) && fields[4].equalsIgnoreCase(DoctorAvailabilityStatus.AVAILABLE.name())) {
                     return true; // Doctor has at least one available slot
                 }
             }
@@ -87,7 +90,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
-                if (fields[0].equals(doctorID) && fields[2].equals(date) && fields[4].equalsIgnoreCase("available")) {
+                if (fields[0].equals(doctorID) && fields[2].equals(date) && fields[4].equalsIgnoreCase(DoctorAvailabilityStatus.AVAILABLE.name())) {
                     hasAvailableSlots = true;
                     break;
                 }
@@ -109,7 +112,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
-                if (fields[0].equals(doctorID) && fields[2].equalsIgnoreCase("Doctor")) {
+                if (fields[0].equals(doctorID) && fields[2].equalsIgnoreCase(UserRole.DOCTOR.name())) {
                     doctorExistsInUser = true;
                     break;
                 }
@@ -171,7 +174,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data[0].equals(doctorID) && data[2].equals(date) && data[3].equals(timeSlot) && data[4].equalsIgnoreCase("available")) {
+                if (data[0].equals(doctorID) && data[2].equals(date) && data[3].equals(timeSlot) && data[4].equalsIgnoreCase(DoctorAvailabilityStatus.AVAILABLE.name())) {
                     return true;
                 }
             }
@@ -205,7 +208,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
-                if (fields[0].equals(doctorID) && fields[2].equalsIgnoreCase("Doctor")) {
+                if (fields[0].equals(doctorID) && fields[2].equalsIgnoreCase(UserRole.DOCTOR.name())) {
                     return fields[3];
                 }
             }
@@ -285,7 +288,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
                 updateDoctorAvailability(doctorID, doctorName, appointment[3], appointment[4], true);
                 appointment[3] = newDate;
                 appointment[4] = newTimeSlot;
-                appointment[5] = "pending";
+                appointment[5] = AppointmentStatus.PENDING.name();
                 updateDoctorAvailability(doctorID, doctorName, newDate, newTimeSlot, false);
                 valid = true;
                 rescheduleSlotStatus(doctorID, oldDate, oldTimeSlot, newDate, newTimeSlot);
@@ -313,9 +316,9 @@ public class AppointmentService extends DoctorAvailabilityService implements App
                 String timeSlot = appointment[4];
 
                 // Update the appointment status to canceled
-                appointment[5] = "canceled";
+                appointment[5] = AppointmentStatus.CANCELLED.name();
                 appointmentFound = true;
-                updateSlotStatus(doctorID, date, timeSlot, "available");
+                updateSlotStatus(doctorID, date, timeSlot, DoctorAvailabilityStatus.AVAILABLE.name());
 
                 break;
             }
@@ -373,7 +376,7 @@ public class AppointmentService extends DoctorAvailabilityService implements App
                 oldSlotUpdated = true;
             }
             if (entry[0].equals(doctorID) && entry[2].equals(newDate) && entry[3].equals(newTimeSlot)) {
-                entry[4] = "booked"; // Set the new slot to "unavailable"
+                entry[4] = DoctorAvailabilityStatus.BOOKED.name(); // Set the new slot to "unavailable"
                 newSlotUpdated = true;
             }
         }

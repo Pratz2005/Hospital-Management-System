@@ -4,6 +4,8 @@ import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.io.*;
 import Appointment.AppointmentService;
+import enums.AppointmentStatus;
+
 
 public class PatientMenu extends AbstractMenu {
     private Patient patient;
@@ -199,7 +201,7 @@ public class PatientMenu extends AbstractMenu {
 
     // Helper method to validate the appointment ID and its status
     public boolean isValidAppointmentForCancellation(String appointmentID) {
-        String appointmentFile = "src/Files/Appointment.csv";
+        String appointmentFile = "resources/Appointment.csv";
 
         try (BufferedReader reader = new BufferedReader(new FileReader(appointmentFile))) {
             String line = reader.readLine(); // Skip header line
@@ -208,7 +210,7 @@ public class PatientMenu extends AbstractMenu {
                 String[] fields = line.split(",");
 
                 // Check if the appointment ID matches and status is not "completed"
-                if (fields[0].equals(appointmentID) && !fields[5].equalsIgnoreCase("completed")) {
+                if (fields[0].equals(appointmentID) && !fields[5].equalsIgnoreCase(AppointmentStatus.COMPLETED.name())) {
                     return true; // Valid appointment ID for cancellation
                 }
             }
@@ -222,8 +224,8 @@ public class PatientMenu extends AbstractMenu {
 
     private void viewScheduledAppointments() {
         String patientID = patient.getPatientID();
-        String appointmentFile = "src/Files/Appointment.csv";
-        String userFile = "src/Files/User.csv";
+        String appointmentFile = "resources/Appointment.csv";
+        String userFile = "resources/User.csv";
         boolean foundConfirmed = false;
 
         try (BufferedReader appointmentReader = new BufferedReader(new FileReader(appointmentFile))) {
@@ -246,7 +248,7 @@ public class PatientMenu extends AbstractMenu {
                 String status = fields[5];
 
                 // Check if the appointment is for the current patient and is confirmed
-                if (appointmentPatientID.equals(patientID) && status.equals("confirmed")) {
+                if (appointmentPatientID.equals(patientID) && status.equals(AppointmentStatus.CONFIRMED.name())) {
                     String doctorName = getDoctorName(appointmentDoctorID, userFile);
 
                     System.out.println("\n==== Upcoming Appointment ====");

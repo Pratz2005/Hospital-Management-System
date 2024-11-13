@@ -1,5 +1,7 @@
 package UserMenu;
 import UserMain.Administrator;
+import enums.MedicineList;
+import enums.UserRole;
 
 import java.io.IOException;
 import java.util.InputMismatchException;
@@ -73,8 +75,6 @@ public class AdministratorMenu extends AbstractMenu {
 
     public void manageHospitalStaff() throws IOException {
         Scanner scanner = new Scanner(System.in);
-        final List<String> VALID_ROLES = List.of("Doctor", "Pharmacist", "Administrator");
-
         while (true) {
             System.out.println("Manage Hospital Staff:");
             System.out.println("1. View Staff List");
@@ -143,7 +143,7 @@ public class AdministratorMenu extends AbstractMenu {
     // Method to get validated staff details for adding or updating
     private String[] getValidatedStaffDetails(int operationType) {
         Scanner scanner = new Scanner(System.in);
-        final List<String> VALID_ROLES = List.of("Doctor", "Pharmacist", "Administrator");
+        final List<String> VALID_ROLES = List.of(UserRole.DOCTOR.name(), UserRole.PHARMACIST.name(),UserRole.ADMINISTRATOR.name());
 
         // Choose validation method for Staff ID based on operation type (0 for add, 1 for update)
         String id = (operationType == 0) ? getValidatedNewStaffID(scanner) : getValidatedExistingStaffID(scanner);
@@ -213,14 +213,19 @@ public class AdministratorMenu extends AbstractMenu {
         while (true) {
             System.out.print("Enter Staff Role (Doctor, Pharmacist, Administrator): ");
             role = scanner.nextLine().trim();
-            if (validRoles.contains(role)) {
-                break;
+
+            // Convert input to uppercase to make it case-insensitive
+            String roleUpper = role.toUpperCase();
+
+            // Check if the uppercase version is in the list of valid roles
+            if (validRoles.contains(roleUpper)) {
+                return roleUpper; // Return the uppercase version of the role
             } else {
                 System.out.println("Invalid role. Please enter one of the following: Doctor, Pharmacist, Administrator.");
             }
         }
-        return role;
     }
+
 
     private String getValidatedGender(Scanner scanner) {
         String gender;
@@ -258,7 +263,7 @@ public class AdministratorMenu extends AbstractMenu {
 
     private boolean isStaffIDExists(String id) {
         // Reads Staff.csv and checks if the given ID already exists
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/Files/Staff.csv"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("resources/Staff.csv"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
@@ -311,7 +316,7 @@ public class AdministratorMenu extends AbstractMenu {
 
     // Check if the Appointment ID exists in Appointment.csv
     private boolean isAppointmentIDExists(String appointmentID) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/Files/Appointment.csv"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("resources/Appointment.csv"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
@@ -330,7 +335,7 @@ public class AdministratorMenu extends AbstractMenu {
         int choice;
 
         // Set of valid medications (case-insensitive)
-        final Set<String> validMedications = Set.of("PARACETAMOL", "IBUPROFEN", "AMOXICILLIN");
+        final Set<String> validMedications = Set.of(MedicineList.AMOXICILLIN.name(), MedicineList.IBUPROFEN.name(),MedicineList.PARACETAMOL.name());
 
         System.out.println("View and Manage Medication Inventory:");
         System.out.println("1. View Medication Inventory");
@@ -396,12 +401,13 @@ public class AdministratorMenu extends AbstractMenu {
             medicineName = scanner.nextLine().trim();
 
             if (validMedications.contains(medicineName.toUpperCase())) {
-                return medicineName;
+                return medicineName.toUpperCase(); // Convert to uppercase to match enum format
             } else {
                 System.out.println("Invalid medication name. Please enter 'Paracetamol', 'Ibuprofen', or 'Amoxicillin'.");
             }
         }
     }
+
 
     // Method to validate numeric input for stock levels
     private int getValidatedNumberInput(Scanner scanner, String prompt) {

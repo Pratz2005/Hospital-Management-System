@@ -1,5 +1,6 @@
 package UserMain;
 
+import enums.UserRole;
 import java.io.*;
 import java.util.*;
 import UserMenu.*;
@@ -11,8 +12,8 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         String id, password, name = null;
         String role = null;
-        String filePath = "src/Files/User.csv"; // Path to User.csv
-        String patientFilePath = "src/Files/Patient_List.csv"; // Path to Patient_List.csv
+        String filePath = "resources/User.csv"; // Path to User.csv
+        String patientFilePath = "resources/Patient_List.csv"; // Path to Patient_List.csv
         boolean authenticated = false;
         Object user = null;
 
@@ -63,7 +64,7 @@ public class Main {
 
                         authenticated = true;
 
-                        if (role.equals("patient")) {
+                        if (role.equals(UserRole.PATIENT.name())) {
                             try (BufferedReader brPatient = new BufferedReader(new FileReader(patientFilePath))) {
 
                                 String linePatient;
@@ -89,13 +90,13 @@ public class Main {
                                     }
                                 }
                             }
-                        } else if (role.equals("Doctor")) {
+                        } else if (role.equals(UserRole.DOCTOR.name())) {
                             AppointmentService appointmentService = new AppointmentService();
                             DoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService();
                             user = new Doctor(id, password, role, name, appointmentService, doctorAvailabilityService);
-                        } else if (role.equals("Pharmacist")) {
+                        } else if (role.equals(UserRole.PHARMACIST.name())) {
                             user = new Pharmacist(id, password, role, name);
-                        } else if (role.equals("Administrator")) {
+                        } else if (role.equals(UserRole.ADMINISTRATOR.name())) {
                             user = new Administrator();
                         }
                         break;
@@ -118,16 +119,16 @@ public class Main {
         AbstractMenu menu = null;
 
         switch (role) {
-            case "patient":
+            case "PATIENT":
                 menu = new PatientMenu((Patient) user);
                 break;
-            case "Doctor":
+            case "DOCTOR":
                 menu = new DoctorMenu((Doctor) user);
                 break;
-            case "Pharmacist":
+            case "PHARMACIST":
                 menu = new PharmacistMenu((Pharmacist) user);
                 break;
-            case "Administrator":
+            case "ADMINISTRATOR":
                 menu = new AdministratorMenu((Administrator) user);
                 break;
             default:

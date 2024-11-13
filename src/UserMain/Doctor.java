@@ -1,5 +1,6 @@
 package UserMain;
 
+import enums.AppointmentStatus;
 import Appointment.AppointmentManager;
 import Appointment.DoctorAvailabilityManager;
 import java.io.*;
@@ -11,8 +12,8 @@ public class Doctor extends User {
     private AppointmentManager appointmentManager;
     private DoctorAvailabilityManager availabilityManager;
 
-    private static final String APPOINTMENT_FILE = "src/Files/Appointment.csv";
-    private static final String APPOINTMENT_RECORD_FILE = "src/Files/AppointmentRecord.csv";
+    private static final String APPOINTMENT_FILE = "resources/Appointment.csv";
+    private static final String APPOINTMENT_RECORD_FILE = "resources/AppointmentRecord.csv";
 
     public Doctor(String doctorID, String password, String role, String name, AppointmentManager appointmentManager, DoctorAvailabilityManager availabilityManager) {
         super(doctorID, password, role, name); // Call the User constructor to initialize ID, password, role, and name
@@ -70,11 +71,11 @@ public class Doctor extends User {
     }
 
     public void acceptAppointment(String appointmentID) {
-        updateAppointmentStatus(appointmentID, "confirmed");
+        updateAppointmentStatus(appointmentID, AppointmentStatus.CONFIRMED.name());
     }
 
     public void declineAppointment(String appointmentID) {
-        updateAppointmentStatus(appointmentID, "canceled");
+        updateAppointmentStatus(appointmentID, AppointmentStatus.CANCELLED.name());
     }
 
     public void viewUpcomingAppointments() {
@@ -87,7 +88,7 @@ public class Doctor extends User {
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
 
-                if (fields[1].equals(doctorID) && fields[5].equals("confirmed")) {
+                if (fields[1].equals(doctorID) && fields[5].equals(AppointmentStatus.CONFIRMED.name())) {
                     hasAppointments = true;
                     System.out.println("Appointment ID: " + fields[0]);
                     System.out.println("Patient ID: " + fields[2]);
@@ -113,7 +114,7 @@ public class Doctor extends User {
                     diagnosis,
                     prescriptionMedicine,
                     String.valueOf(quantity),
-                    "pending", // Prescription status initially set to "pending"
+                    AppointmentStatus.PENDING.name(), // Prescription status initially set to "pending"
                     treatmentPlan,
                     date,
                     typeOfService,
@@ -126,15 +127,15 @@ public class Doctor extends User {
             System.err.println("Error writing to AppointmentRecord.csv: " + e.getMessage());
         }
 
-        // Update the appointment status to "completed" in Appointment.csv
-        updateAppointmentStatus(appointmentID, "completed");
+        // Update the appointment status to completed in Appointment.csv
+        updateAppointmentStatus(appointmentID, AppointmentStatus.COMPLETED.name());
 
         // Update Patient_List.csv with the new diagnosis and treatment plan as past treatment
         updatePatientPastTreatment(appointmentID, diagnosis, treatmentPlan);
     }
 
     private void updatePatientPastTreatment(String appointmentID, String diagnosis, String treatmentPlan) {
-        String patientFilePath = "src/Files/Patient_List.csv";
+        String patientFilePath = "resources/Patient_List.csv";
         String patientID = getPatientIDByAppointment(appointmentID);
 
         if (patientID == null) {
@@ -295,7 +296,7 @@ public class Doctor extends User {
                 String[] fields = line.split(",");
 
                 // Check if the appointment is for this doctor, on the specified date, and confirmed
-                if (fields[1].equals(doctorID) && fields[3].equals(date) && fields[5].equals("confirmed")) {
+                if (fields[1].equals(doctorID) && fields[3].equals(date) && fields[5].equals(AppointmentStatus.CONFIRMED.name())) {
                     hasAppointments = true;
                     System.out.println("Appointment ID: " + fields[0]);
                     System.out.println("Patient ID: " + fields[2]);

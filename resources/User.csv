@@ -1,0 +1,10 @@
+ID,Password,Role,Name
+P1001,omg,PATIENT,Alice Brown
+P1002,player,PATIENT,Bob Stone
+P1003,il,PATIENT,Charlie White
+D001,domg,DOCTOR,John Smith
+D002,123,DOCTOR,Emily Clarke
+P001,IamSlay,PHARMACIST,Mark Lee
+A001,admin,ADMINISTRATOR,Sarah Lee
+P003,pass,PHARMACIST,dd
+D006,password,DOCTOR,rere

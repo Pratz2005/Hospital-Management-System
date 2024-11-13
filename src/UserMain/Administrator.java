@@ -4,16 +4,19 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import enums.PrescriptionStatus;
+import enums.ReplenishmentRequestStatus;
 
 import java.util.*;
 
 public class Administrator {
 
-    private static final String STAFF_FILE_PATH = "src/Files/Staff.csv";
-    private static final String APPOINTMENT_FILE_PATH = "src/Files/Appointment.csv";
-    private static final String MEDICINE_FILE_PATH = "src/Files/Medicine_List.csv";
-    private static final String APPOINTMENT_RECORD_FILE = "src/Files/AppointmentRecord.csv";
-    private static final String REPLENISHMENT_REQUEST_FILE = "src/Files/ReplenishmentRequest.csv";
+    private static final String STAFF_FILE_PATH = "resources/Staff.csv";
+    private static final String USER_FILE_PATH = "resources/User.csv";
+    private static final String APPOINTMENT_FILE_PATH = "resources/Appointment.csv";
+    private static final String MEDICINE_FILE_PATH = "resources/Medicine_List.csv";
+    private static final String APPOINTMENT_RECORD_FILE = "resources/AppointmentRecord.csv";
+    private static final String REPLENISHMENT_REQUEST_FILE = "resources/ReplenishmentRequest.csv";
 
     // Method to view the staff list
     public void viewStaffList() throws IOException {
@@ -85,20 +88,31 @@ public class Administrator {
     }
 
     // Method to add a staff member
+// Method to add a staff member
     public void addStaff(String id, String name, String role, String gender, int age) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(STAFF_FILE_PATH, true))) {
             bw.write(id + "," + name + "," + role + "," + gender + "," + age);
             bw.newLine();  // Add a newline at the end
             System.out.println("Staff member added successfully.");
         }
+
+        // Add corresponding entry to User.csv
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_FILE_PATH, true))) {
+            String defaultPassword = "password"; // Define a default password
+            bw.write(id + "," + defaultPassword + "," + role + "," + name);
+            bw.newLine();
+            //System.out.println("Staff member added successfully.");
+        }
     }
 
+
     // Method to update a staff member
+// Method to update a staff member
     public void updateStaff(String id, String newName, String newRole, String newGender, int newAge) throws IOException {
         List<String[]> staffList = readCSV(STAFF_FILE_PATH);
         boolean staffFound = false;
 
-        // Find the staff member by ID and update details
+        // Find the staff member by ID and update details in Staff.csv
         for (String[] staff : staffList) {
             if (staff[0].equals(id)) {
                 staff[1] = newName;
@@ -116,14 +130,36 @@ public class Administrator {
         } else {
             System.out.println("Staff member with ID " + id + " not found.");
         }
+
+        // Update corresponding entry in User.csv
+        List<String[]> userList = readCSV(USER_FILE_PATH);
+        boolean userFound = false;
+
+        for (String[] user : userList) {
+            if (user[0].equals(id)) {
+                user[2] = newRole;
+                user[3] = newName;
+                userFound = true;
+                break;
+            }
+        }
+
+        if (userFound) {
+            writeUserCSV(userList, USER_FILE_PATH);
+            //System.out.println("Staff member updated successfully.");
+        } else {
+            //System.out.println("Staff member with ID " + id + " not found.");
+        }
     }
 
+
     // Method to remove a staff member by ID
+// Method to remove a staff member by ID
     public void removeStaff(String id) throws IOException {
         List<String[]> staffList = readCSV(STAFF_FILE_PATH);
         boolean staffFound = false;
 
-        // Find and remove the staff member by ID
+        // Find and remove the staff member by ID in Staff.csv
         for (int i = 0; i < staffList.size(); i++) {
             if (staffList.get(i)[0].equals(id)) {
                 staffList.remove(i);
@@ -134,11 +170,31 @@ public class Administrator {
 
         if (staffFound) {
             writeStaffCSV(staffList, STAFF_FILE_PATH);
-            System.out.println("Staff member removed successfully.");
+            System.out.println("Staff member removed from successfully.");
         } else {
-            System.out.println("Staff member with ID " + id + " not found.");
+            System.out.println("Staff member with ID " + id + " not found in.");
+        }
+
+        // Remove corresponding entry in User.csv
+        List<String[]> userList = readCSV(USER_FILE_PATH);
+        boolean userFound = false;
+
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i)[0].equals(id)) {
+                userList.remove(i);
+                userFound = true;
+                break;
+            }
+        }
+
+        if (userFound) {
+            writeUserCSV(userList, USER_FILE_PATH);
+            //System.out.println("Staff member removed successfully.");
+        } else {
+            //System.out.println("Staff member with ID " + id + " not found.");
         }
     }
+
 
     // Method to view the medication inventory
     public void viewMedicationInventory() throws IOException {
@@ -246,6 +302,22 @@ public class Administrator {
             }
         }
     }
+
+    // Helper method to write the updated user list back to User.csv
+    private void writeUserCSV(List<String[]> userList, String filePath) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+            // Write header first for the user list
+            bw.write("ID,Password,Role,Name");
+            bw.newLine();
+
+            // Write the rest of the user list
+            for (String[] user : userList) {
+                bw.write(String.join(",", user));
+                bw.newLine();
+            }
+        }
+    }
+
     // Method to approve replenishment requests
     public void approveReplenishmentRequests() {
         List<String[]> replenishmentRequests = new ArrayList<>();
@@ -257,7 +329,7 @@ public class Administrator {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data[3].equalsIgnoreCase("pending")) {
+                if (data[3].equalsIgnoreCase(PrescriptionStatus.PENDING.name())) {
                     replenishmentRequests.add(data);
                 }
                 updatedRequests.add(data); // Store for later updates
@@ -294,7 +366,7 @@ public class Administrator {
             }
 
             if (approval.equals("Y")) {
-                request[3] = "approved"; // Update status to approved
+                request[3] = ReplenishmentRequestStatus.APPROVED.name(); // Update status to approved
 
                 // Update the medicine stock by adding the requested quantity to the original stock
                 if (medicineStock.containsKey(medicineName)) {

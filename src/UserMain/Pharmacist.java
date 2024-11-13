@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 import java.util.Random;
+import enums.PrescriptionStatus;
 
 public class Pharmacist extends User {
     private static List<String[]> replenishmentRequests = new ArrayList<>();// Store replenishment requests
@@ -18,8 +19,8 @@ public class Pharmacist extends User {
     }
 
     public void viewAppointmentOutcome(String appointmentID) {
-        String appointmentFilePath = "src/Files/Appointment.csv";
-        String recordFilePath = "src/Files/AppointmentRecord.csv";
+        String appointmentFilePath = "resources/Appointment.csv";
+        String recordFilePath = "resources/AppointmentRecord.csv";
         System.out.println("Appointment Outcome for Appointment ID: " + appointmentID);
 
         // Step 1: Verify that the appointment is completed for this ID in Appointment.csv
@@ -97,8 +98,8 @@ public class Pharmacist extends User {
     }
 
     public void updatePrescriptionStatus(String appointmentID) {
-        String recordFilePath = "src/Files/AppointmentRecord.csv";
-        String medicineFilePath = "src/Files/Medicine_List.csv";
+        String recordFilePath = "resources/AppointmentRecord.csv";
+        String medicineFilePath = "resources/Medicine_List.csv";
         boolean appointmentFound = false;
         boolean stockSufficient = false;
 
@@ -120,7 +121,7 @@ public class Pharmacist extends User {
                     prescribedMedicine = fields[2];
                     prescribedQuantity = Integer.parseInt(fields[3]);
 
-                    if (!fields[4].equalsIgnoreCase("pending")) {
+                    if (!fields[4].equalsIgnoreCase(PrescriptionStatus.PENDING.name())) {
                         System.out.println("Prescription is already dispensed for this appointment.");
                         return;
                     }
@@ -175,7 +176,7 @@ public class Pharmacist extends User {
         try (BufferedWriter recordWriter = new BufferedWriter(new FileWriter(recordFilePath))) {
             for (String[] fields : records) {
                 if (fields[0].equals(appointmentID)) {
-                    fields[4] = "dispensed"; // Update status to dispensed
+                    fields[4] = PrescriptionStatus.DISPENSED.name(); // Update status to dispensed
                 }
                 recordWriter.write(String.join(",", fields));
                 recordWriter.newLine();
@@ -196,7 +197,7 @@ public class Pharmacist extends User {
     }
 
     public void viewMedicationInventory() {
-        String medicineFilePath = "src/Files/Medicine_List.csv";
+        String medicineFilePath = "resources/Medicine_List.csv";
 
         System.out.println("\n==== Medication Inventory ====");
         System.out.printf("%-20s %-15s %-20s%n", "Medicine Name", "Initial Stock", "Low Stock Level Alert");
@@ -224,8 +225,8 @@ public class Pharmacist extends User {
     }
 
     public void submitReplenishmentRequest(String medicineName, int quantity) {
-        String replenishmentFilePath = "src/Files/ReplenishmentRequest.csv";
-        String status = "pending";
+        String replenishmentFilePath = "resources/ReplenishmentRequest.csv";
+        String status = PrescriptionStatus.PENDING.name();
 
         // Generate RRID with "RR" followed by 3 random digits
         String rrid = "RR" + String.format("%03d", new Random().nextInt(1000));

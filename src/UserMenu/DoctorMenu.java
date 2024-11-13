@@ -1,4 +1,6 @@
 package UserMenu;
+import enums.AppointmentStatus;
+import enums.DoctorAvailabilityStatus;
 import UserMain.Doctor;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,13 +12,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
 import Appointment.AppointmentService;
+import enums.MedicineList;
 
 
 public class DoctorMenu extends AbstractMenu {
     private Doctor doctor;
     private Scanner sc;
-    private static final List<String> VALID_PRESCRIPTIONS = List.of("Paracetamol", "Ibuprofen", "Amoxicillin","Na");
-    private static final String APPOINTMENT_FILE = "src/Files/Appointment.csv";
+    private static final List<String> VALID_PRESCRIPTIONS = List.of(MedicineList.AMOXICILLIN.name(), MedicineList.IBUPROFEN.name(),MedicineList.PARACETAMOL.name(),MedicineList.NA.name());
+    private static final String APPOINTMENT_FILE = "resources/Appointment.csv";
     private AppointmentService appointmentService = new AppointmentService();
 
     public DoctorMenu(Doctor doctor) {
@@ -97,7 +100,7 @@ public class DoctorMenu extends AbstractMenu {
         System.out.print("Enter Patient ID to view medical records: ");
         String patientID = sc.nextLine();
 
-        String patientFile = "src/Files/Patient_List.csv";
+        String patientFile = "resources/Patient_List.csv";
         boolean found = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(patientFile))) {
@@ -149,7 +152,7 @@ public class DoctorMenu extends AbstractMenu {
             System.out.print("Enter new prescription (Paracetamol, Ibuprofen, Amoxicillin, NA): ");
             prescription = sc.nextLine().trim();
             if (isValidPrescription(prescription)) {
-                prescription = capitalizeFirstLetter(prescription);
+                prescription = prescription.toUpperCase(); // Convert to uppercase to match enum format
                 break;
             } else {
                 System.out.println("Invalid prescription. Please enter a valid prescription.");
@@ -266,7 +269,7 @@ public class DoctorMenu extends AbstractMenu {
                 String timeSlot = fields[4];
                 String status = fields[5];
 
-                if (appointmentDoctorID.equals(doctorID) && status.equals("pending")) {
+                if (appointmentDoctorID.equals(doctorID) && status.equals(AppointmentStatus.PENDING.name())) {
                     foundPending = true;
                     System.out.println("\n==== Pending Appointment ====");
                     System.out.println("Appointment ID: " + appointmentID);
@@ -288,7 +291,7 @@ public class DoctorMenu extends AbstractMenu {
                             } else if (response == 2) {
                                 doctor.declineAppointment(appointmentID);
                                 System.out.println("Appointment declined.");
-                                appointmentService.updateSlotStatus(doctorID, date, timeSlot, "available");
+                                appointmentService.updateSlotStatus(doctorID, date, timeSlot, DoctorAvailabilityStatus.AVAILABLE.name());
                                 break;
                             } else {
                                 System.out.println("Invalid option. Please enter 1 to accept or 2 to decline.");
@@ -343,7 +346,7 @@ public class DoctorMenu extends AbstractMenu {
             System.out.print("Enter prescription medicine (Paracetamol, Ibuprofen, Amoxicillin, NA): ");
             prescription = sc.nextLine().trim();
             if (isValidPrescription(prescription)) {
-                prescription = capitalizeFirstLetter(prescription);
+                prescription = prescription.toUpperCase(); // Convert to uppercase to match enum format
                 break;
             } else {
                 System.out.println("Invalid prescription. Please enter a valid prescription.");
@@ -395,7 +398,7 @@ public class DoctorMenu extends AbstractMenu {
 
     // Method to check if the appointment outcome is already recorded
     private boolean isAppointmentOutcomeRecorded(String appointmentID) {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/Files/AppointmentRecord.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("resources/AppointmentRecord.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -411,12 +414,7 @@ public class DoctorMenu extends AbstractMenu {
 
 
     private boolean isValidPrescription(String prescription) {
-        return VALID_PRESCRIPTIONS.contains(capitalizeFirstLetter(prescription));
-    }
-
-    private String capitalizeFirstLetter(String text) {
-        if (text == null || text.isEmpty()) return text;
-        return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+        return VALID_PRESCRIPTIONS.contains(prescription.toUpperCase());
     }
 
     private boolean isValidAppointmentID(String appointmentID) {
