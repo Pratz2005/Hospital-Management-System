@@ -1,5 +1,6 @@
 package UserMain;
 
+import enums.BillStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
@@ -258,8 +259,8 @@ public class Pharmacist extends User {
         double unitPrice = MEDICINE_PRICES.getOrDefault(prescribedMedicine.toLowerCase(), 0.0);
         double billAmount = unitPrice * prescribedQuantity;
 
-        // Set the status as "pending" and feedback as "na"
-        String status = "pending";
+        // Set the status as pending" and feedback as "na"
+        String status = BillStatus.PENDING.name();
         String feedback = "na";
 
         // Append the new bill entry to Bill.csv

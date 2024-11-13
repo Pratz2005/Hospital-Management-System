@@ -397,7 +397,7 @@ public class AdministratorMenu extends AbstractMenu {
     private String getValidatedMedicineName(Scanner scanner, Set<String> validMedications) {
         String medicineName;
         while (true) {
-            System.out.print("Enter the name of the medication: ");
+            System.out.print("Enter the name of the medication(Paracetamol, Amoxicillin, Ibuprofen): ");
             medicineName = scanner.nextLine().trim();
 
             if (validMedications.contains(medicineName.toUpperCase())) {

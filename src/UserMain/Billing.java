@@ -1,5 +1,6 @@
 package UserMain;
 
+import enums.BillStatus;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class Billing {
                 String feedback = billFields.length > 3 ? billFields[3] : ""; // Feedback might be empty initially
 
                 // Process only if the appointment is completed and bill status is pending
-                if (completedAppointments.contains(billAppointmentID) && billStatus.equalsIgnoreCase("pending")) {
+                if (completedAppointments.contains(billAppointmentID) && billStatus.equalsIgnoreCase(BillStatus.PENDING.name())) {
                     hasPendingBills = true;
                     System.out.println("\n==== Billing Information ====");
                     System.out.println("Appointment ID: " + billAppointmentID);
@@ -56,7 +57,7 @@ public class Billing {
                     // Prompt user to pay the bill
                     int payChoice = getInputChoice("Would you like to pay this bill now? (1: Yes, 2: No): ");
                     if (payChoice == 1) {
-                        billStatus = "paid";
+                        billStatus = BillStatus.PAID.name();
 
                         // Prompt user for feedback
                         feedback = getValidFeedback();
