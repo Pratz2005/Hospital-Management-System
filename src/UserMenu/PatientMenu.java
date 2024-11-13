@@ -1,11 +1,11 @@
 package UserMenu;
+import UserMain.Billing;
 import UserMain.Patient;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.io.*;
 import Appointment.AppointmentService;
 import enums.AppointmentStatus;
-
 
 public class PatientMenu extends AbstractMenu {
     private Patient patient;
@@ -32,8 +32,9 @@ public class PatientMenu extends AbstractMenu {
             System.out.println("(6) Cancel an Appointment");
             System.out.println("(7) View Scheduled Appointments");
             System.out.println("(8) View Past Appointment Outcome Records");
+            System.out.println("(9) View Bill");
 
-            displayLogoutOption(9); // Call the common logout option method
+            displayLogoutOption(10); // Call the common logout option method
 
             // Wrap input handling in try-catch to handle non-integer inputs
             try {
@@ -66,6 +67,9 @@ public class PatientMenu extends AbstractMenu {
                         patient.viewPastAppointmentOutcome();
                         break;
                     case 9:
+                        viewBill(); // Call the new method to view and manage bills
+                        break;
+                    case 10:
                         System.out.println("Logging out...");
                         break;
                     default:
@@ -76,7 +80,7 @@ public class PatientMenu extends AbstractMenu {
                 sc.nextLine(); // Clear invalid input from the scanner buffer
                 choice = -1; // Reset choice to continue the loop without exiting
             }
-        } while (choice != 9); // Repeat until logout
+        } while (choice != 10); // Repeat until logout
     }
 
     private void updatePersonalInformation() {
@@ -297,5 +301,11 @@ public class PatientMenu extends AbstractMenu {
         }
 
         return "Unknown Doctor"; // Return a default value if the doctor is not found
+    }
+
+    // New method to view and manage bills for the patient
+    private void viewBill() {
+        Billing billing = new Billing(patient.getPatientID());
+        billing.processBilling();
     }
 }

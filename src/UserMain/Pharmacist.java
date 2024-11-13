@@ -5,10 +5,19 @@ import java.util.List;
 import java.io.*;
 import java.util.Random;
 import enums.PrescriptionStatus;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Pharmacist extends User {
     private static List<String[]> replenishmentRequests = new ArrayList<>();// Store replenishment requests
     private static List<String[]> medicineList;
+    private static final Map<String, Double> MEDICINE_PRICES = new HashMap<>();
+    static {
+        // Initialize medicine prices
+        MEDICINE_PRICES.put("paracetamol", 0.125);
+        MEDICINE_PRICES.put("ibuprofen", 0.50);
+        MEDICINE_PRICES.put("amoxicillin", 0.95);
+    }
 
     public Pharmacist(String id, String password, String role, String name){
         super(id, password, role, name);
@@ -194,6 +203,9 @@ public class Pharmacist extends User {
         } catch (IOException e) {
             System.err.println("Error writing to Medicine_List.csv: " + e.getMessage());
         }
+
+        // Step 5: Generate the bill after dispensing the medicine
+        generateBill(appointmentID, prescribedMedicine, prescribedQuantity);
     }
 
     public void viewMedicationInventory() {
@@ -238,6 +250,25 @@ public class Pharmacist extends User {
             System.out.println("Replenishment request submitted for " + medicineName + " with quantity " + quantity + ". Status: " + status);
         } catch (IOException e) {
             System.err.println("Error writing to ReplenishmentRequest.csv: " + e.getMessage());
+        }
+    }
+
+    public void generateBill(String appointmentID, String prescribedMedicine, int prescribedQuantity) {
+        String billFilePath = "resources/Bill.csv";
+        double unitPrice = MEDICINE_PRICES.getOrDefault(prescribedMedicine.toLowerCase(), 0.0);
+        double billAmount = unitPrice * prescribedQuantity;
+
+        // Set the status as "pending" and feedback as "na"
+        String status = "pending";
+        String feedback = "na";
+
+        // Append the new bill entry to Bill.csv
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(billFilePath, true))) {
+            writer.write(appointmentID + "," + billAmount + "," + status + "," + feedback);
+            writer.newLine();
+            //System.out.println("Bill generated for Appointment ID: " + appointmentID + " - Amount: $" + billAmount + " - Status: " + status);
+        } catch (IOException e) {
+            System.err.println("Error writing to Bill.csv: " + e.getMessage());
         }
     }
 }
