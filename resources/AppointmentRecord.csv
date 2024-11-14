@@ -1,10 +1,1 @@
 appointmentID,diagnosis,prescriptionMedicine,prescriptionQuantity,prescriptionStatus,treatmentPlan,date,typeOfService,consultationNotes
-AP330,No sick,Ibuprofen,3,pending,No sick,11-11-24,xray,NA
-
-AP970,VVVSick,Paracetamol,30,DISPENSED,have med,11-11-24,consultation,fwfefef
-AP523,na,Ibuprofen,1,dispensed,na,11-11-24,consultatiomn,na
-AP718,tanya,Paracetamol,78,DISPENSED,reAD ME,11-11-24,ba,na
-AP139,not sick,Paracetamol,2,pending,Stay hydrated,11-11-24,x-ray,na
-AP865,sick,Paracetamol,2,DISPENSED,get rest,11-11-24,x-ray,na
-AP614,gegd,Ibuprofen,54,DISPENSED,fef,11-11-24,xsqxsq,efef
-AP733,r3,PARACETAMOL,55,DISPENSED,gfd,11-11-24,dwdw,gf
