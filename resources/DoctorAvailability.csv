@@ -1,12 +1,1 @@
-D001,John Smith,11-11-24,09:00-09:30,booked
-D001,John Smith,11-11-24,09:30-10:00,booked
-D001,John Smith,11-11-24,10:00-10:30,booked
-D001,John Smith,11-11-24,10:30-11:00,booked
-D001,John Smith,11-11-24,11:00-11:30,booked
-D001,John Smith,11-11-24,11:30-12:00,booked
-D002,Emily Clarke,11-11-24,09:00-09:30,booked
-D002,Emily Clarke,11-11-24,09:30-10:00,BOOKED
-D002,Emily Clarke,11-11-24,10:00-10:30,available
-D002,Emily Clarke,11-11-24,10:30-11:00,AVAILABLE
-D002,Emily Clarke,11-11-24,11:00-11:30,available
-D002,Emily Clarke,11-11-24,11:30-12:00,BOOKED
+
