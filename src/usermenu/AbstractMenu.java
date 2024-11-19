@@ -1,4 +1,4 @@
-package UserMenu;
+package usermenu;
 
 import java.util.Scanner;
 

@@ -1,5 +1,5 @@
-package UserMenu;
-import UserMain.Administrator;
+package usermenu;
+import usermain.Administrator;
 import enums.MedicineList;
 import enums.UserRole;
 

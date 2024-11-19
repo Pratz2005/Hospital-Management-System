@@ -1,10 +1,10 @@
-package UserMenu;
-import UserMain.Billing;
-import UserMain.Patient;
+package usermenu;
+import usermain.Billing;
+import usermain.Patient;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.io.*;
-import Appointment.AppointmentService;
+import appointment.AppointmentService;
 import enums.AppointmentStatus;
 
 /**

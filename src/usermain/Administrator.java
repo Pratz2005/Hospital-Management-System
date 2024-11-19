@@ -4,7 +4,7 @@
  * It includes methods for viewing, adding, updating, and removing staff, as well as
  * handling appointment details and medication stock updates.
  */
-package UserMain;
+package usermain;
 
 import java.io.*;
 import java.util.ArrayList;

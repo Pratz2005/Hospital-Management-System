@@ -1,4 +1,4 @@
-package Appointment;
+package appointment;
 
 /**
  * The AppointmentManager interface defines the methods required for managing appointments

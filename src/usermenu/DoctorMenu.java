@@ -1,7 +1,7 @@
-package UserMenu;
+package usermenu;
 import enums.AppointmentStatus;
 import enums.DoctorAvailabilityStatus;
-import UserMain.Doctor;
+import usermain.Doctor;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
-import Appointment.AppointmentService;
+import appointment.AppointmentService;
 import enums.MedicineList;
 
 /**

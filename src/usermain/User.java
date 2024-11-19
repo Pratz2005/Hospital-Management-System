@@ -1,4 +1,4 @@
-package UserMain;
+package usermain;
 
 /**
  * Represents a user in the Hospital Management System.

@@ -1,4 +1,4 @@
-package UserMenu;
+package usermenu;
 
 /**
  * The Menu interface defines the structure for displaying a menu in the system.

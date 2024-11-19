@@ -1,8 +1,8 @@
-package UserMain;
+package usermain;
 
 import enums.AppointmentStatus;
-import Appointment.AppointmentManager;
-import Appointment.DoctorAvailabilityManager;
+import appointment.AppointmentManager;
+import appointment.DoctorAvailabilityManager;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

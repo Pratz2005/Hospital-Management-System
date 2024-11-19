@@ -1,4 +1,4 @@
-package Appointment;
+package appointment;
 
 /**
  * The DoctorAvailabilityManager interface defines the methods required for managing

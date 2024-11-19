@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="dc.created" content="2024-11-18">
-<meta name="description" content="declaration: package: Appointment, class: AppointmentService">
+<meta name="description" content="declaration: package: appointment, class: AppointmentService">
 <meta name="generator" content="javadoc/ClassWriter">
 <link rel="stylesheet" type="text/css" href="../resource-files/jquery-ui.min.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../resource-files/stylesheet.css" title="Style">
@@ -80,24 +80,24 @@ loadScripts(document, 'script');</script>
 <main role="main">
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">Appointment</a></div>
+<div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">appointment</a></div>
 <h1 title="Class AppointmentService" class="title">Class AppointmentService</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="DoctorAvailabilityService.html" title="class in Appointment">Appointment.DoctorAvailabilityService</a>
-<div class="inheritance">Appointment.AppointmentService</div>
+<div class="inheritance"><a href="DoctorAvailabilityService.html" title="class in appointment">appointment.DoctorAvailabilityService</a>
+<div class="inheritance">appointment.AppointmentService</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
 <div class="horizontal-scroll">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="AppointmentManager.html" title="interface in Appointment">AppointmentManager</a></code>, <code><a href="DoctorAvailabilityManager.html" title="interface in Appointment">DoctorAvailabilityManager</a></code></dd>
+<dd><code><a href="AppointmentManager.html" title="interface in appointment">AppointmentManager</a></code>, <code><a href="DoctorAvailabilityManager.html" title="interface in appointment">DoctorAvailabilityManager</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">AppointmentService</span>
-<span class="extends-implements">extends <a href="DoctorAvailabilityService.html" title="class in Appointment">DoctorAvailabilityService</a>
-implements <a href="AppointmentManager.html" title="interface in Appointment">AppointmentManager</a></span></div>
+<span class="extends-implements">extends <a href="DoctorAvailabilityService.html" title="class in appointment">DoctorAvailabilityService</a>
+implements <a href="AppointmentManager.html" title="interface in appointment">AppointmentManager</a></span></div>
 <div class="block">The AppointmentService class provides functionality for managing appointments,
  including scheduling, rescheduling, canceling, and viewing appointment statuses.
  It extends the DoctorAvailabilityService and implements the AppointmentManager interface.</div>
@@ -177,7 +177,7 @@ implements <a href="AppointmentManager.html" title="interface in Appointment">Ap
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-Appointment.DoctorAvailabilityService">Methods inherited from class&nbsp;Appointment.<a href="DoctorAvailabilityService.html" title="class in Appointment">DoctorAvailabilityService</a></h3>
+<h3 id="methods-inherited-from-class-Appointment.DoctorAvailabilityService">Methods inherited from class&nbsp;appointment.<a href="DoctorAvailabilityService.html" title="class in appointment">DoctorAvailabilityService</a></h3>
 <code><a href="DoctorAvailabilityService.html#setDoctorAvailability(java.lang.String,java.lang.String,java.lang.String,java.lang.String%5B%5D)">setDoctorAvailability</a>, <a href="DoctorAvailabilityService.html#updateDoctorAvailability(java.lang.String,java.lang.String,java.lang.String,java.lang.String,boolean)">updateDoctorAvailability</a>, <a href="DoctorAvailabilityService.html#viewDoctorAvailability(java.lang.String,java.lang.String)">viewDoctorAvailability</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
@@ -217,7 +217,7 @@ implements <a href="AppointmentManager.html" title="interface in Appointment">Ap
 <div class="block">Schedules a new appointment for a patient, validating doctor availability, date, and time slot.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="AppointmentManager.html#scheduleAppointment(java.lang.String)">scheduleAppointment</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in Appointment">AppointmentManager</a></code></dd>
+<dd><code><a href="AppointmentManager.html#scheduleAppointment(java.lang.String)">scheduleAppointment</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in appointment">AppointmentManager</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>patientID</code> - The unique ID of the patient requesting the appointment</dd>
 <dt>Returns:</dt>
@@ -281,7 +281,7 @@ implements <a href="AppointmentManager.html" title="interface in Appointment">Ap
 <div class="block">Reschedules an appointment, allowing the patient to select a new date and time slot.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="AppointmentManager.html#rescheduleAppointment(java.lang.String)">rescheduleAppointment</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in Appointment">AppointmentManager</a></code></dd>
+<dd><code><a href="AppointmentManager.html#rescheduleAppointment(java.lang.String)">rescheduleAppointment</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in appointment">AppointmentManager</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>appointmentID</code> - The unique ID of the appointment to reschedule</dd>
 </dl>
@@ -296,7 +296,7 @@ implements <a href="AppointmentManager.html" title="interface in Appointment">Ap
 <div class="block">Cancels an appointment and updates the slot to be available.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="AppointmentManager.html#cancelAppointment(java.lang.String)">cancelAppointment</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in Appointment">AppointmentManager</a></code></dd>
+<dd><code><a href="AppointmentManager.html#cancelAppointment(java.lang.String)">cancelAppointment</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in appointment">AppointmentManager</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>appointmentID</code> - The unique ID of the appointment to cancel</dd>
 </dl>
@@ -311,7 +311,7 @@ implements <a href="AppointmentManager.html" title="interface in Appointment">Ap
 <div class="block">Views the current status of a specific appointment.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="AppointmentManager.html#viewAppointmentStatus(java.lang.String)">viewAppointmentStatus</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in Appointment">AppointmentManager</a></code></dd>
+<dd><code><a href="AppointmentManager.html#viewAppointmentStatus(java.lang.String)">viewAppointmentStatus</a></code>&nbsp;in interface&nbsp;<code><a href="AppointmentManager.html" title="interface in appointment">AppointmentManager</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>appointmentID</code> - The unique ID of the appointment</dd>
 <dt>Returns:</dt>

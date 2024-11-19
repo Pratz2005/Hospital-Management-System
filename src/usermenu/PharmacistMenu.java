@@ -1,5 +1,5 @@
-package UserMenu;
-import UserMain.Pharmacist;
+package usermenu;
+import usermain.Pharmacist;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

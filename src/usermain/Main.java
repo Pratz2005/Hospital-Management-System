@@ -1,11 +1,11 @@
-package UserMain;
+package usermain;
 
 import enums.UserRole;
 import java.io.*;
 import java.util.*;
-import UserMenu.*;
-import Appointment.AppointmentService;
-import Appointment.DoctorAvailabilityService;
+import usermenu.*;
+import appointment.AppointmentService;
+import appointment.DoctorAvailabilityService;
 
 /**
  * The Main class for the Hospital Management System.

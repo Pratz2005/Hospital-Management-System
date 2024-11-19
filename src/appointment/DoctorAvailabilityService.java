@@ -1,4 +1,4 @@
-package Appointment;
+package appointment;
 
 import enums.DoctorAvailabilityStatus; // Import the enum for availability status
 import java.io.*;

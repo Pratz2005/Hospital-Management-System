@@ -1,4 +1,4 @@
-package Appointment;
+package appointment;
 
 import enums.AppointmentStatus;
 import enums.UserRole;
