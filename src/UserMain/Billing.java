@@ -6,15 +6,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Handles billing operations for patients in the Hospital Management System.
+ * This includes processing bills for completed appointments, prompting for payment,
+ * and collecting feedback.
+ */
 public class Billing {
     private String patientID;
     private Scanner sc;
 
+    /**
+     * Constructor to initialize the Billing instance for a specific patient.
+     *
+     * @param patientID The ID of the patient for whom billing is processed.
+     */
     public Billing(String patientID) {
         this.patientID = patientID;
         this.sc = new Scanner(System.in);
     }
 
+    /**
+     * Processes billing for the patient's completed appointments.
+     * It identifies pending bills, prompts the user for payment,
+     * updates the billing records, and collects feedback.
+     */
     public void processBilling() {
         List<String> billRecords = new ArrayList<>();
         boolean hasPendingBills = false;
@@ -93,7 +108,13 @@ public class Billing {
         }
     }
 
-    // Method to validate input choice specifically for 1 or 2
+    /**
+     * Prompts the user for a choice with a specific message, validating the input to ensure
+     * it is either 1 (Yes) or 2 (No).
+     *
+     * @param message The message to display to the user.
+     * @return The user's choice as an integer (1 or 2).
+     */
     private int getInputChoice(String message) {
         int choice;
         while (true) {
@@ -108,7 +129,12 @@ public class Billing {
         }
     }
 
-    // Method to validate feedback input ensuring it's non-numeric
+    /**
+     * Prompts the user to provide feedback on the appointment.
+     * Ensures that the feedback is non-numeric and meaningful.
+     *
+     * @return A validated feedback string from the user.
+     */
     private String getValidFeedback() {
         String feedback;
         while (true) {
@@ -122,4 +148,3 @@ public class Billing {
         }
     }
 }
-

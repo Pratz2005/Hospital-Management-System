@@ -14,7 +14,11 @@ import java.util.InputMismatchException;
 import Appointment.AppointmentService;
 import enums.MedicineList;
 
-
+/**
+ * The DoctorMenu class provides the menu interface for doctors in the hospital management system.
+ * It includes functionalities for viewing and updating patient medical records, managing schedules,
+ * handling appointment requests, and recording appointment outcomes.
+ */
 public class DoctorMenu extends AbstractMenu {
     private Doctor doctor;
     private Scanner sc;
@@ -22,11 +26,20 @@ public class DoctorMenu extends AbstractMenu {
     private static final String APPOINTMENT_FILE = "resources/Appointment.csv";
     private AppointmentService appointmentService = new AppointmentService();
 
+    /**
+     * Constructs a new DoctorMenu instance for the given doctor.
+     *
+     * @param doctor The Doctor object representing the doctor using the menu
+     */
     public DoctorMenu(Doctor doctor) {
         this.doctor = doctor;
         this.sc = new Scanner(System.in);
     }
 
+    /**
+     * Displays the doctor menu and handles user input for menu options.
+     * The menu provides options for managing medical records, schedules, and appointments.
+     */
     @Override
     public void displayMenu() {
         int choice;
@@ -96,6 +109,9 @@ public class DoctorMenu extends AbstractMenu {
         } while (choice != 8);
     }
 
+    /**
+     * Displays the medical records of a specific patient based on the entered patient ID.
+     */
     private void viewPatientMedicalRecords() {
         System.out.print("Enter Patient ID to view medical records: ");
         String patientID = sc.nextLine();
@@ -131,6 +147,10 @@ public class DoctorMenu extends AbstractMenu {
         }
     }
 
+    /**
+     * Updates the medical records of a specific patient based on the entered appointment ID.
+     * Allows the doctor to input a diagnosis, prescription, quantity, treatment plan, and consultation notes.
+     */
     private void updatePatientMedicalRecords() {
         String appointmentID;
 
@@ -184,6 +204,10 @@ public class DoctorMenu extends AbstractMenu {
         doctor.updatePatientMedicalRecord(appointmentID, diagnosis, prescription, quantity, treatmentPlan, notes);
     }
 
+    /**
+     * Allows the doctor to set availability for appointments on a specific date.
+     * The doctor can select time slots to mark as available.
+     */
     private void setAvailabilityForAppointments() {
         String date;
 
@@ -246,7 +270,10 @@ public class DoctorMenu extends AbstractMenu {
         doctor.setAvailability(date, availableSlots.toArray(new String[0]));
     }
 
-
+    /**
+     * Allows the doctor to accept or decline pending appointment requests.
+     * Updates the appointment status and slot availability based on the decision.
+     */
     private void acceptOrDeclineAppointmentRequests() {
         String doctorID = doctor.getDoctorID();
         boolean foundPending = false;
@@ -312,6 +339,10 @@ public class DoctorMenu extends AbstractMenu {
         }
     }
 
+    /**
+     * Records the outcome of a specific appointment, including diagnosis, prescription,
+     * treatment plan, and consultation notes.
+     */
     private void recordAppointmentOutcome() {
         String appointmentID;
 
@@ -396,7 +427,12 @@ public class DoctorMenu extends AbstractMenu {
         doctor.recordAppointmentOutcome(appointmentID, diagnosis, prescription, quantity, treatmentPlan, date, typeOfService, notes);
     }
 
-    // Method to check if the appointment outcome is already recorded
+    /**
+     * Checks if the outcome of a specific appointment is already recorded.
+     *
+     * @param appointmentID The appointment ID to check
+     * @return true if the outcome is recorded; false otherwise
+     */
     private boolean isAppointmentOutcomeRecorded(String appointmentID) {
         try (BufferedReader br = new BufferedReader(new FileReader("resources/AppointmentRecord.csv"))) {
             String line;
@@ -412,11 +448,22 @@ public class DoctorMenu extends AbstractMenu {
         return false; // Appointment outcome not recorded
     }
 
-
+    /**
+     * Checks if a prescription is valid by comparing it with a predefined list of valid prescriptions.
+     *
+     * @param prescription The prescription to validate
+     * @return true if the prescription is valid; false otherwise
+     */
     private boolean isValidPrescription(String prescription) {
         return VALID_PRESCRIPTIONS.contains(prescription.toUpperCase());
     }
 
+    /**
+     * Checks if an appointment ID is valid by looking it up in the appointment records.
+     *
+     * @param appointmentID The appointment ID to validate
+     * @return true if the appointment ID is valid; false otherwise
+     */
     private boolean isValidAppointmentID(String appointmentID) {
         try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
             String line;
@@ -432,6 +479,12 @@ public class DoctorMenu extends AbstractMenu {
         return false;
     }
 
+    /**
+     * Retrieves the correct date for a specific appointment based on the appointment ID.
+     *
+     * @param appointmentID The appointment ID to look up
+     * @return The date of the appointment, or null if not found
+     */
     private String getCorrectAppointmentDate(String appointmentID) {
         try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
             String line;
@@ -447,6 +500,12 @@ public class DoctorMenu extends AbstractMenu {
         return null;
     }
 
+    /**
+     * Checks if the given date is in a valid format (DD-MM-YY).
+     *
+     * @param date The date to validate
+     * @return true if the date format is valid; false otherwise
+     */
     private boolean isValidDateFormat(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
         dateFormat.setLenient(false);

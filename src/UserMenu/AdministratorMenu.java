@@ -12,12 +12,27 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.Set;
 
+/**
+ * The AdministratorMenu class provides the menu interface for administrators in the hospital management system.
+ * It includes functionalities for managing hospital staff, viewing and managing appointments,
+ * managing medication inventory, and approving replenishment requests.
+ */
 public class AdministratorMenu extends AbstractMenu {
     private Administrator admin;
+
+    /**
+     * Constructs a new AdministratorMenu instance for the given administrator.
+     *
+     * @param admin The Administrator object representing the administrator using the menu
+     */
     public AdministratorMenu(Administrator admin) {
         this.admin = admin;
     }
 
+    /**
+     * Displays the administrator menu and handles user input for menu options.
+     * The menu provides options for managing staff, appointments, and inventory.
+     */
     @Override
     public void displayMenu() {
         int choice;
@@ -70,9 +85,11 @@ public class AdministratorMenu extends AbstractMenu {
         } while (choice != 5); // Repeat until logout
     }
 
-    // Method to manage hospital staff (add, remove, update)
-
-
+    /**
+     * Manages hospital staff, including viewing, adding, updating, and removing staff members.
+     *
+     * @throws IOException If an error occurs while accessing staff data
+     */
     public void manageHospitalStaff() throws IOException {
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -140,7 +157,12 @@ public class AdministratorMenu extends AbstractMenu {
         }
     }
 
-    // Method to get validated staff details for adding or updating
+    /**
+     * Retrieves validated staff details for adding or updating staff members.
+     *
+     * @param operationType The operation type: 0 for adding new staff, 1 for updating existing staff
+     * @return An array of strings containing validated staff details
+     */
     private String[] getValidatedStaffDetails(int operationType) {
         Scanner scanner = new Scanner(System.in);
         final List<String> VALID_ROLES = List.of(UserRole.DOCTOR.name(), UserRole.PHARMACIST.name(),UserRole.ADMINISTRATOR.name());
@@ -156,7 +178,12 @@ public class AdministratorMenu extends AbstractMenu {
         return new String[]{id, name, role, gender, String.valueOf(age)};
     }
 
-    // Method to get a valid new Staff ID (for adding new staff)
+    /**
+     * Validates and retrieves a new staff ID for adding a staff member.
+     *
+     * @param scanner The Scanner object for user input
+     * @return A validated new staff ID
+     */
     private String getValidatedNewStaffID(Scanner scanner) {
         String id;
         while (true) {
@@ -171,8 +198,12 @@ public class AdministratorMenu extends AbstractMenu {
         return id;
     }
 
-    // Method to get a valid existing Staff ID (for updating existing staff)
-    // Method to get a valid existing Staff ID (for updating existing staff)
+    /**
+     * Validates and retrieves an existing staff ID for updating staff information.
+     *
+     * @param scanner The Scanner object for user input
+     * @return A validated existing staff ID
+     */
     private String getValidatedExistingStaffID(Scanner scanner) {
         String id;
         while (true) {
@@ -187,13 +218,22 @@ public class AdministratorMenu extends AbstractMenu {
         return id;
     }
 
-
-    // Check if the ID format is correct (e.g., one letter followed by three digits)
+    /**
+     * Checks if the given staff ID format is valid.
+     *
+     * @param id The staff ID to validate
+     * @return true if the ID is valid; false otherwise
+     */
     private boolean isProperFormat(String id) {
         return id.matches("^[A-Z]\\d{3}$");
     }
 
-
+    /**
+     * Validates and retrieves a staff name.
+     *
+     * @param scanner The Scanner object for user input
+     * @return A validated staff name
+     */
     private String getValidatedName(Scanner scanner) {
         String name;
         while (true) {
@@ -208,6 +248,13 @@ public class AdministratorMenu extends AbstractMenu {
         return name;
     }
 
+    /**
+     * Validates and retrieves a staff role.
+     *
+     * @param scanner    The Scanner object for user input
+     * @param validRoles A list of valid roles
+     * @return A validated staff role
+     */
     private String getValidatedRole(Scanner scanner, List<String> validRoles) {
         String role;
         while (true) {
@@ -226,7 +273,12 @@ public class AdministratorMenu extends AbstractMenu {
         }
     }
 
-
+    /**
+     * Validates and retrieves a staff gender.
+     *
+     * @param scanner The Scanner object for user input
+     * @return A validated staff gender
+     */
     private String getValidatedGender(Scanner scanner) {
         String gender;
         while (true) {
@@ -241,6 +293,12 @@ public class AdministratorMenu extends AbstractMenu {
         return gender;
     }
 
+    /**
+     * Validates and retrieves a staff age.
+     *
+     * @param scanner The Scanner object for user input
+     * @return A validated staff age
+     */
     private int getValidatedAge(Scanner scanner) {
         int age;
         while (true) {
@@ -261,6 +319,12 @@ public class AdministratorMenu extends AbstractMenu {
         return age;
     }
 
+    /**
+     * Checks if the given staff ID exists in the system.
+     *
+     * @param id The staff ID to check
+     * @return true if the staff ID exists; false otherwise
+     */
     private boolean isStaffIDExists(String id) {
         // Reads Staff.csv and checks if the given ID already exists
         try (BufferedReader reader = new BufferedReader(new FileReader("resources/Staff.csv"))) {
@@ -277,12 +341,20 @@ public class AdministratorMenu extends AbstractMenu {
         return false; // ID does not exist
     }
 
+    /**
+     * Checks if the given name is valid (contains only alphabetic characters and spaces).
+     *
+     * @param name The name to validate
+     * @return true if the name is valid; false otherwise
+     */
     private boolean isValidName(String name) {
         // Check if the name contains only alphabetic characters and spaces
         return Pattern.matches("^[A-Za-z ]+$", name);
     }
 
-    // Method to prompt for Appointment ID input, validate it, and view appointment details
+    /**
+     * Prompts for an appointment ID, validates it, and displays appointment details.
+     */
     private void viewAppointmentDetailsInput() {
         Scanner scanner = new Scanner(System.in);
         String appointmentID;
@@ -309,12 +381,22 @@ public class AdministratorMenu extends AbstractMenu {
         }
     }
 
-    // Check if Appointment ID format is correct (e.g., "AP" followed by three digits)
+    /**
+     * Checks if the given appointment ID format is valid.
+     *
+     * @param appointmentID The appointment ID to validate
+     * @return true if the ID format is valid; false otherwise
+     */
     private boolean isProperAppointmentIDFormat(String appointmentID) {
         return appointmentID.matches("^AP\\d{3}$");
     }
 
-    // Check if the Appointment ID exists in Appointment.csv
+    /**
+     * Checks if the given appointment ID exists in the system.
+     *
+     * @param appointmentID The appointment ID to check
+     * @return true if the appointment ID exists; false otherwise
+     */
     private boolean isAppointmentIDExists(String appointmentID) {
         try (BufferedReader reader = new BufferedReader(new FileReader("resources/Appointment.csv"))) {
             String line;
@@ -330,6 +412,10 @@ public class AdministratorMenu extends AbstractMenu {
         return false; // Appointment ID does not exist
     }
 
+    /**
+     * Manages the medication inventory, including viewing inventory, updating stock levels,
+     * and updating low stock level alerts.
+     */
     public void viewAndManageMedicationInventory() {
         Scanner scanner = new Scanner(System.in);
         int choice;
@@ -393,7 +479,13 @@ public class AdministratorMenu extends AbstractMenu {
         }
     }
 
-    // Method to validate medication name input
+    /**
+     * Validates and retrieves a medication name from user input.
+     *
+     * @param scanner          The Scanner object for user input
+     * @param validMedications A set of valid medication names
+     * @return A validated medication name
+     */
     private String getValidatedMedicineName(Scanner scanner, Set<String> validMedications) {
         String medicineName;
         while (true) {
@@ -408,8 +500,13 @@ public class AdministratorMenu extends AbstractMenu {
         }
     }
 
-
-    // Method to validate numeric input for stock levels
+    /**
+     * Validates and retrieves a numeric input for stock levels or low stock alerts.
+     *
+     * @param scanner The Scanner object for user input
+     * @param prompt  The prompt message for the user
+     * @return A validated numeric input
+     */
     private int getValidatedNumberInput(Scanner scanner, String prompt) {
         int number;
         while (true) {
@@ -424,6 +521,4 @@ public class AdministratorMenu extends AbstractMenu {
             }
         }
     }
-
 }
-

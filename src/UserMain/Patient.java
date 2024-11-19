@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
+/**
+ * The Patient class represents a patient in the hospital management system.
+ * It provides functionalities to manage and view personal information, medical records,
+ * appointments, and treatment outcomes.
+ */
 public class Patient extends User {
     private String patientID;
     private String dob;
@@ -21,6 +26,22 @@ public class Patient extends User {
     private AppointmentManager appointmentManager;
     private DoctorAvailabilityManager availabilityManager;
 
+    /**
+     * Constructs a new Patient object with the provided details.
+     *
+     * @param patientID         The unique ID of the patient
+     * @param password          The patient's password
+     * @param role              The role of the user (e.g., "Patient")
+     * @param name              The name of the patient
+     * @param dob               The patient's date of birth
+     * @param gender            The gender of the patient
+     * @param contactNo         The contact number of the patient
+     * @param email             The email address of the patient
+     * @param bloodType         The blood type of the patient
+     * @param pastTreatment     Details of past treatments
+     * @param appointmentManager The AppointmentManager instance for managing appointments
+     * @param availabilityManager The DoctorAvailabilityManager instance for managing doctor availability
+     */
     public Patient(String patientID, String password, String role, String name, String dob, String gender, String contactNo, String email, String bloodType, String pastTreatment, AppointmentManager appointmentManager, DoctorAvailabilityManager availabilityManager) {
         super(patientID, password, role, name); // Call the User constructor to initialize ID, password, role, and name
         this.patientID = patientID;
@@ -34,10 +55,18 @@ public class Patient extends User {
         this.availabilityManager = availabilityManager;
     }
 
+    /**
+     * Gets the patient's unique ID.
+     *
+     * @return The patient ID
+     */
     public String getPatientID() {
         return patientID;
     }
 
+    /**
+     * Displays the patient's medical record, including personal details and past treatments.
+     */
     public void viewMedicalRecord() {
         updatePastTreatmentFromCSV(); // Update pastTreatment field before viewing
 
@@ -63,7 +92,9 @@ public class Patient extends User {
         }
     }
 
-    // Update pastTreatment field by reading from Patient_List.csv
+    /**
+     * Updates the pastTreatment field by reading data from the Patient_List.csv file.
+     */
     private void updatePastTreatmentFromCSV() {
         String filePath = "resources/Patient_List.csv";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -82,12 +113,16 @@ public class Patient extends User {
         }
     }
 
-
+    /**
+     * Updates the patient's personal information (email and contact number).
+     *
+     * @param newEmail    The new email address of the patient
+     * @param newContactNo The new contact number of the patient
+     */
     public void updatePersonalInfo(String newEmail, String newContactNo) {
         this.email = newEmail;
         this.contactNo = newContactNo;
 
-        // Update the information in the CSV file
         if (updatePatientInfoInCSV(this.patientID, newEmail, newContactNo)) {
             System.out.println("Personal information updated successfully.");
         } else {
@@ -95,7 +130,14 @@ public class Patient extends User {
         }
     }
 
-    // Helper method to update patient information in the CSV file
+    /**
+     * Updates the patient's information in the Patient_List.csv file.
+     *
+     * @param patientID   The patient's ID
+     * @param newEmail    The new email address
+     * @param newContactNo The new contact number
+     * @return true if the update was successful, false otherwise
+     */
     private boolean updatePatientInfoInCSV(String patientID, String newEmail, String newContactNo) {
         String filePath = "resources/Patient_List.csv";
         List<String[]> records = new ArrayList<>();
@@ -137,7 +179,12 @@ public class Patient extends User {
         return isUpdated;
     }
 
-
+    /**
+     * Displays available appointment slots for a specific doctor on a given date.
+     *
+     * @param doctorID The doctor's ID
+     * @param date     The desired date for the appointment
+     */
     public void viewAvailableAppointmentSlots(String doctorID, String date) {
         String[] availableSlots = availabilityManager.viewDoctorAvailability(doctorID, date);
         System.out.println("Available Slots:");
@@ -146,6 +193,11 @@ public class Patient extends User {
         }
     }
 
+    /**
+     * Schedules a new appointment for the patient.
+     *
+     * @param patientID The patient's ID
+     */
     public void scheduleAppointment(String patientID) {
         String appointmentID = appointmentManager.scheduleAppointment(patientID);
         if (appointmentID != null) {
@@ -155,20 +207,27 @@ public class Patient extends User {
         }
     }
 
-
+    /**
+     * Reschedules an existing appointment by its ID.
+     *
+     * @param appointmentID The ID of the appointment to be rescheduled
+     */
     public void rescheduleAppointment(String appointmentID) {
         appointmentManager.rescheduleAppointment(appointmentID);
     }
 
+    /**
+     * Cancels an existing appointment by its ID.
+     *
+     * @param appointmentID The ID of the appointment to be canceled
+     */
     public void cancelAppointment(String appointmentID) {
         appointmentManager.cancelAppointment(appointmentID);
     }
 
-    public void viewScheduledAppointments(String appointmentID) {
-        String status = appointmentManager.viewAppointmentStatus(appointmentID);
-        System.out.println("Appointment Status: " + status);
-    }
-
+    /**
+     * Displays the outcomes of past completed appointments for the patient.
+     */
     public void viewPastAppointmentOutcome() {
         String appointmentFilePath = "resources/Appointment.csv";
         String recordFilePath = "resources/AppointmentRecord.csv";
@@ -248,5 +307,4 @@ public class Patient extends User {
             System.err.println("Error reading AppointmentRecord.csv: " + e.getMessage());
         }
     }
-
 }

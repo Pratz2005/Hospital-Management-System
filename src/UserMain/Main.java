@@ -7,7 +7,19 @@ import UserMenu.*;
 import Appointment.AppointmentService;
 import Appointment.DoctorAvailabilityService;
 
+/**
+ * The Main class for the Hospital Management System.
+ * It handles user authentication and directs users to their specific menus
+ * based on their roles (Patient, Doctor, Pharmacist, Administrator).
+ */
 public class Main {
+    /**
+     * The entry point of the application.
+     * Handles user authentication and redirects to role-specific menus.
+     *
+     * @param args Command-line arguments (not used in this application).
+     * @throws IOException if there is an error reading or writing to files.
+     */
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
         String id, password, name = null;
@@ -140,6 +152,15 @@ public class Main {
         menu.displayMenu();
     }
 
+    /**
+     * Updates the password of a user in the specified CSV files.
+     *
+     * @param userFilePath      The file path of the User.csv file.
+     * @param patientFilePath   The file path of the Patient_List.csv file.
+     * @param userId            The ID of the user whose password needs to be updated.
+     * @param newPassword       The new password to set for the user.
+     * @throws IOException if there is an error reading or writing to the files.
+     */
     private static void updatePasswordInCSV(String userFilePath, String patientFilePath, String userId, String newPassword) throws IOException {
         // Update password in User.csv
         List<String> userLines = new ArrayList<>();
@@ -187,5 +208,4 @@ public class Main {
             }
         }
     }
-
 }

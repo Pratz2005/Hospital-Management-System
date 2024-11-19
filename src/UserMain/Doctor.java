@@ -7,6 +7,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Doctor class represents a doctor in the hospital management system.
+ * It provides functionalities to manage appointments, update patient records,
+ * set availability, and view schedules and upcoming appointments.
+ */
 public class Doctor extends User {
     private String doctorID;
     private AppointmentManager appointmentManager;
@@ -15,6 +20,16 @@ public class Doctor extends User {
     private static final String APPOINTMENT_FILE = "resources/Appointment.csv";
     private static final String APPOINTMENT_RECORD_FILE = "resources/AppointmentRecord.csv";
 
+    /**
+     * Constructs a new Doctor object with the provided details.
+     *
+     * @param doctorID           The unique ID of the doctor
+     * @param password           The doctor's password
+     * @param role               The role of the user (e.g., "Doctor")
+     * @param name               The name of the doctor
+     * @param appointmentManager The AppointmentManager instance for managing appointments
+     * @param availabilityManager The DoctorAvailabilityManager instance for managing availability
+     */
     public Doctor(String doctorID, String password, String role, String name, AppointmentManager appointmentManager, DoctorAvailabilityManager availabilityManager) {
         super(doctorID, password, role, name); // Call the User constructor to initialize ID, password, role, and name
         this.doctorID = doctorID;
@@ -22,14 +37,25 @@ public class Doctor extends User {
         this.availabilityManager = availabilityManager;
     }
 
+    /**
+     * Gets the doctor's unique ID.
+     *
+     * @return The doctor ID
+     */
     public String getDoctorID(){
         return doctorID;
     }
 
-    public void viewPatientMedicalRecord(Patient patient) {
-        patient.viewMedicalRecord();
-    }
-
+    /**
+     * Updates a patient's medical record for a specific appointment.
+     *
+     * @param appointmentID         The ID of the appointment
+     * @param newDiagnosis          The updated diagnosis
+     * @param newPrescription       The updated prescription medicine
+     * @param newPrescriptionQuantity The updated prescription quantity
+     * @param newTreatmentPlan      The updated treatment plan
+     * @param newConsultationNotes  The updated consultation notes
+     */
     public void updatePatientMedicalRecord(String appointmentID, String newDiagnosis, String newPrescription, int newPrescriptionQuantity, String newTreatmentPlan, String newConsultationNotes) {
         List<String[]> records = loadAppointmentRecords();
         boolean updated = false;
@@ -57,6 +83,11 @@ public class Doctor extends User {
         }
     }
 
+    /**
+     * Views the doctor's personal schedule for a specific date.
+     *
+     * @param date The date for which the schedule is to be viewed
+     */
     public void viewPersonalSchedule(String date) {
         String[] availableSlots = availabilityManager.viewDoctorAvailability(doctorID, date);
         System.out.println("Available Slots:");
@@ -65,19 +96,38 @@ public class Doctor extends User {
         }
     }
 
+    /**
+     * Sets the doctor's availability for a specific date.
+     *
+     * @param date           The date for which availability is to be set
+     * @param availableSlots An array of available time slots
+     */
     public void setAvailability(String date, String[] availableSlots) {
         availabilityManager.setDoctorAvailability(doctorID, getName(), date, availableSlots);
         System.out.println("Availability set successfully.");
     }
 
+    /**
+     * Accepts an appointment by updating its status to "Confirmed."
+     *
+     * @param appointmentID The ID of the appointment to be accepted
+     */
     public void acceptAppointment(String appointmentID) {
         updateAppointmentStatus(appointmentID, AppointmentStatus.CONFIRMED.name());
     }
 
+    /**
+     * Declines an appointment by updating its status to "Cancelled."
+     *
+     * @param appointmentID The ID of the appointment to be declined
+     */
     public void declineAppointment(String appointmentID) {
         updateAppointmentStatus(appointmentID, AppointmentStatus.CANCELLED.name());
     }
 
+    /**
+     * Displays all upcoming confirmed appointments for the doctor.
+     */
     public void viewUpcomingAppointments() {
         System.out.println("Upcoming Appointments for Doctor ID: " + doctorID);
 
@@ -107,6 +157,18 @@ public class Doctor extends User {
         }
     }
 
+    /**
+     * Records the outcome of an appointment, including diagnosis, prescription, and treatment plan.
+     *
+     * @param appointmentID         The ID of the appointment
+     * @param diagnosis             The diagnosis made during the appointment
+     * @param prescriptionMedicine  The prescribed medicine
+     * @param quantity              The quantity of prescribed medicine
+     * @param treatmentPlan         The treatment plan decided during the appointment
+     * @param date                  The date of the appointment
+     * @param typeOfService         The type of service provided
+     * @param notes                 Additional consultation notes
+     */
     public void recordAppointmentOutcome(String appointmentID, String diagnosis, String prescriptionMedicine, int quantity, String treatmentPlan, String date, String typeOfService, String notes) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_RECORD_FILE, true))) {
             String line = String.join(",",
@@ -134,6 +196,13 @@ public class Doctor extends User {
         updatePatientPastTreatment(appointmentID, diagnosis, treatmentPlan);
     }
 
+    /**
+     * Updates a patient's past treatment record in the Patient_List.csv file.
+     *
+     * @param appointmentID The ID of the appointment
+     * @param diagnosis     The diagnosis made during the appointment
+     * @param treatmentPlan The treatment plan decided during the appointment
+     */
     private void updatePatientPastTreatment(String appointmentID, String diagnosis, String treatmentPlan) {
         String patientFilePath = "resources/Patient_List.csv";
         String patientID = getPatientIDByAppointment(appointmentID);
@@ -201,6 +270,12 @@ public class Doctor extends User {
         }
     }
 
+    /**
+     * Retrieves the patient ID associated with a specific appointment.
+     *
+     * @param appointmentID The ID of the appointment
+     * @return The patient ID if found, otherwise null
+     */
     private String getPatientIDByAppointment(String appointmentID) {
         try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
             String line;
@@ -216,7 +291,12 @@ public class Doctor extends User {
         return null;
     }
 
-
+    /**
+     * Updates the status of an appointment.
+     *
+     * @param appointmentID The ID of the appointment to be updated
+     * @param newStatus     The new status of the appointment
+     */
     private void updateAppointmentStatus(String appointmentID, String newStatus) {
         List<String[]> appointments = loadAppointments();
         boolean updated = false;
@@ -237,6 +317,11 @@ public class Doctor extends User {
         }
     }
 
+    /**
+     * Loads all appointments from the Appointment CSV file.
+     *
+     * @return A list of string arrays, where each array represents an appointment record
+     */
     private List<String[]> loadAppointments() {
         List<String[]> appointments = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_FILE))) {
@@ -250,6 +335,11 @@ public class Doctor extends User {
         return appointments;
     }
 
+    /**
+     * Saves the updated list of appointments back to the Appointment CSV file.
+     *
+     * @param appointments The list of updated appointment records
+     */
     private void saveAppointments(List<String[]> appointments) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_FILE))) {
             for (String[] appointment : appointments) {
@@ -261,6 +351,11 @@ public class Doctor extends User {
         }
     }
 
+    /**
+     * Loads all appointment records from the AppointmentRecord CSV file.
+     *
+     * @return A list of string arrays, where each array represents an appointment record
+     */
     private List<String[]> loadAppointmentRecords() {
         List<String[]> records = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(APPOINTMENT_RECORD_FILE))) {
@@ -274,6 +369,11 @@ public class Doctor extends User {
         return records;
     }
 
+    /**
+     * Saves the updated appointment records back to the AppointmentRecord CSV file.
+     *
+     * @param records The list of updated appointment records
+     */
     private void saveAppointmentRecords(List<String[]> records) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPOINTMENT_RECORD_FILE))) {
             for (String[] record : records) {
@@ -285,6 +385,11 @@ public class Doctor extends User {
         }
     }
 
+    /**
+     * Views all confirmed appointments for the doctor on a specific date.
+     *
+     * @param date The date for which appointments are to be viewed
+     */
     public void viewAppointmentsByDate(String date) {
         System.out.println("Confirmed Appointments for Doctor ID: " + doctorID + " on " + date);
 
@@ -314,5 +419,4 @@ public class Doctor extends User {
             System.err.println("Error reading Appointment.csv: " + e.getMessage());
         }
     }
-
 }

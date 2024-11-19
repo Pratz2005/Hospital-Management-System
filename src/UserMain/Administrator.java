@@ -1,3 +1,9 @@
+/**
+ * The Administrator class provides functionalities to manage staff members, appointments,
+ * medication inventory, and replenishment requests in a hospital management system.
+ * It includes methods for viewing, adding, updating, and removing staff, as well as
+ * handling appointment details and medication stock updates.
+ */
 package UserMain;
 
 import java.io.*;
@@ -18,7 +24,11 @@ public class Administrator {
     private static final String APPOINTMENT_RECORD_FILE = "resources/AppointmentRecord.csv";
     private static final String REPLENISHMENT_REQUEST_FILE = "resources/ReplenishmentRequest.csv";
 
-    // Method to view the staff list
+    /**
+     * Displays the list of staff members from the staff CSV file.
+     *
+     * @throws IOException if there is an error reading the file
+     */
     public void viewStaffList() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(STAFF_FILE_PATH))) {
             String line;
@@ -28,7 +38,11 @@ public class Administrator {
         }
     }
 
-    // Method to view appointment details
+    /**
+     * Displays the details of a specific appointment by its ID.
+     *
+     * @param appointmentID The ID of the appointment to be viewed
+     */
     public void viewAppointmentDetails(String appointmentID) {
         boolean appointmentFound = false;
 
@@ -87,8 +101,16 @@ public class Administrator {
         }
     }
 
-    // Method to add a staff member
-// Method to add a staff member
+    /**
+     * Adds a new staff member to the system and creates a corresponding user entry.
+     *
+     * @param id     The ID of the staff member
+     * @param name   The name of the staff member
+     * @param role   The role of the staff member
+     * @param gender The gender of the staff member
+     * @param age    The age of the staff member
+     * @throws IOException if there is an error writing to the file
+     */
     public void addStaff(String id, String name, String role, String gender, int age) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(STAFF_FILE_PATH, true))) {
             bw.write(id + "," + name + "," + role + "," + gender + "," + age);
@@ -105,9 +127,16 @@ public class Administrator {
         }
     }
 
-
-    // Method to update a staff member
-// Method to update a staff member
+    /**
+     * Updates the details of an existing staff member in the system.
+     *
+     * @param id       The ID of the staff member to be updated
+     * @param newName  The new name of the staff member
+     * @param newRole  The new role of the staff member
+     * @param newGender The new gender of the staff member
+     * @param newAge   The new age of the staff member
+     * @throws IOException if there is an error reading or writing to the file
+     */
     public void updateStaff(String id, String newName, String newRole, String newGender, int newAge) throws IOException {
         List<String[]> staffList = readCSV(STAFF_FILE_PATH);
         boolean staffFound = false;
@@ -152,9 +181,12 @@ public class Administrator {
         }
     }
 
-
-    // Method to remove a staff member by ID
-// Method to remove a staff member by ID
+    /**
+     * Removes a staff member from the system by their ID.
+     *
+     * @param id The ID of the staff member to be removed
+     * @throws IOException if there is an error reading or writing to the file
+     */
     public void removeStaff(String id) throws IOException {
         List<String[]> staffList = readCSV(STAFF_FILE_PATH);
         boolean staffFound = false;
@@ -196,7 +228,11 @@ public class Administrator {
     }
 
 
-    // Method to view the medication inventory
+    /**
+     * Displays the medication inventory from the CSV file.
+     *
+     * @throws IOException if there is an error reading the file
+     */
     public void viewMedicationInventory() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(MEDICINE_FILE_PATH))) {
             String line;
@@ -212,7 +248,13 @@ public class Administrator {
         }
     }
 
-    // Method to update medication stock level
+    /**
+     * Updates the stock level of a specific medication in the inventory.
+     *
+     * @param medicineName  The name of the medication to be updated
+     * @param newStockLevel The new stock level for the medication
+     * @throws IOException if there is an error reading or writing to the file
+     */
     public void updateMedicationStock(String medicineName, int newStockLevel) throws IOException {
         List<String[]> medicineList = readCSV(MEDICINE_FILE_PATH);
         boolean medicineFound = false;
@@ -233,6 +275,13 @@ public class Administrator {
         }
     }
 
+    /**
+     * Updates the low stock level alert for a specific medication.
+     *
+     * @param medicineName       The name of the medication to be updated
+     * @param newLowStockLevel   The new low stock alert level for the medication
+     * @throws IOException if there is an error reading or writing to the file
+     */
     public void updateLowStockLevel(String medicineName, int newLowStockLevel) throws IOException {
         List<String[]> medicineList = readCSV(MEDICINE_FILE_PATH);
         boolean medicineFound = false;
@@ -253,7 +302,14 @@ public class Administrator {
         }
     }
 
-    // Helper method to read the CSV file into a list
+    /**
+     * Reads data from a CSV file and converts it into a list of string arrays.
+     * Each array represents a row in the CSV file, with its elements corresponding to the columns.
+     *
+     * @param filePath The path to the CSV file to be read
+     * @return A list of string arrays, where each array represents a row in the CSV file
+     * @throws IOException if there is an error reading the file
+     */
     private List<String[]> readCSV(String filePath) throws IOException {
         List<String[]> staffList = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -272,7 +328,14 @@ public class Administrator {
         return staffList;
     }
 
-    // Helper method to write the updated medicine list back to the CSV file
+    /**
+     * Writes an updated list of medicines back to a CSV file.
+     * The method ensures the file includes the correct header and updated content.
+     *
+     * @param medicineList A list of string arrays representing the updated medicine data
+     * @param filePath     The path to the CSV file to be updated
+     * @throws IOException if there is an error writing to the file
+     */
     private void writeMedicineCSV(List<String[]> medicineList, String filePath) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             // Write header first for the medicine list
@@ -287,8 +350,14 @@ public class Administrator {
         }
     }
 
-
-    // Helper method to write the updated staff list back to the CSV file
+    /**
+     * Writes an updated list of staff members back to a CSV file.
+     * The method ensures the file includes the correct header and updated content.
+     *
+     * @param staffList A list of string arrays representing the updated staff data
+     * @param filePath  The path to the CSV file to be updated
+     * @throws IOException if there is an error writing to the file
+     */
     private void writeStaffCSV(List<String[]> staffList, String filePath) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             // Write header first for the staff list
@@ -303,7 +372,14 @@ public class Administrator {
         }
     }
 
-    // Helper method to write the updated user list back to User.csv
+    /**
+     * Writes an updated list of users back to the User CSV file.
+     * The method ensures the file includes the correct header and updated content.
+     *
+     * @param userList A list of string arrays representing the updated user data
+     * @param filePath The path to the User CSV file to be updated
+     * @throws IOException if there is an error writing to the file
+     */
     private void writeUserCSV(List<String[]> userList, String filePath) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             // Write header first for the user list
@@ -318,7 +394,10 @@ public class Administrator {
         }
     }
 
-    // Method to approve replenishment requests
+    /**
+     * Approves pending replenishment requests for medications.
+     * Updates the replenishment request file and medication stock levels accordingly.
+     */
     public void approveReplenishmentRequests() {
         List<String[]> replenishmentRequests = new ArrayList<>();
         List<String[]> updatedRequests = new ArrayList<>();
@@ -393,7 +472,11 @@ public class Administrator {
         saveUpdatedMedicineStock(medicineStock);
     }
 
-    // Method to load medicine stock from Medicine_List.csv
+    /**
+     * Loads the current stock of medications from the CSV file into a map.
+     *
+     * @return A map containing medication names as keys and stock levels as values
+     */
     private Map<String, Integer> loadMedicineStock() {
         Map<String, Integer> stock = new HashMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(MEDICINE_FILE_PATH))) {
@@ -411,7 +494,11 @@ public class Administrator {
         return stock;
     }
 
-    // Method to save updated medicine stock to Medicine_List.csv
+    /**
+     * Saves the updated stock levels of medications back to the CSV file.
+     *
+     * @param medicineStock A map containing updated medication stock levels
+     */
     private void saveUpdatedMedicineStock(Map<String, Integer> medicineStock) {
         List<String[]> updatedStock = new ArrayList<>();
 
@@ -442,5 +529,4 @@ public class Administrator {
             System.err.println("Error writing to Medicine_List.csv: " + e.getMessage());
         }
     }
-
 }

@@ -7,18 +7,32 @@ import java.io.*;
 import Appointment.AppointmentService;
 import enums.AppointmentStatus;
 
+/**
+ * The PatientMenu class provides the menu interface for patients in the hospital management system.
+ * It allows patients to view medical records, update personal information, schedule or manage appointments,
+ * view bills, and interact with other patient-related functionalities.
+ */
 public class PatientMenu extends AbstractMenu {
     private Patient patient;
     private Scanner sc;
     private AppointmentService appointmentService;
 
-    // Constructor to accept the patient object
+    /**
+     * Constructs a new PatientMenu instance for the given patient.
+     *
+     * @param patient The Patient object representing the patient using the menu
+     */
     public PatientMenu(Patient patient) {
         this.patient = patient;
         this.sc = new Scanner(System.in);
         this.appointmentService = new AppointmentService();
     }
 
+    /**
+     * Displays the patient menu and handles user input for menu options.
+     * The menu provides options for viewing medical records, scheduling appointments,
+     * managing personal information, and billing.
+     */
     @Override
     public void displayMenu() {
         int choice;
@@ -83,6 +97,10 @@ public class PatientMenu extends AbstractMenu {
         } while (choice != 10); // Repeat until logout
     }
 
+    /**
+     * Updates the patient's personal information, including email and contact number.
+     * Ensures the inputs are validated before updating.
+     */
     private void updatePersonalInformation() {
         String newEmail;
         String newContactNo;
@@ -113,19 +131,31 @@ public class PatientMenu extends AbstractMenu {
         patient.updatePersonalInfo(newEmail, newContactNo);
     }
 
-    // Helper method to validate email format
+    /**
+     * Validates the format of the given email address.
+     *
+     * @param email The email address to validate
+     * @return true if the email format is valid; false otherwise
+     */
     private boolean isValidEmail(String email) {
         String emailRegex = "^[\\w-\\.]+@[\\w-\\.]+\\.([a-z]{2,3})$"; // Simplified regex pattern for email validation
         return email.matches(emailRegex);
     }
 
-    // Helper method to validate contact number format
+    /**
+     * Validates the format of the given contact number.
+     *
+     * @param contactNo The contact number to validate
+     * @return true if the contact number format is valid; false otherwise
+     */
     private boolean isValidContactNumber(String contactNo) {
         String contactNoRegex = "^\\d{8}$"; // Ensures exactly 8 digits
         return contactNo.matches(contactNoRegex);
     }
 
-
+    /**
+     * Allows the patient to view available appointment slots for a specific doctor on a specific date.
+     */
     private void viewAvailableAppointmentSlots() {
         Scanner scanner = new Scanner(System.in);
         String doctorID;
@@ -162,11 +192,19 @@ public class PatientMenu extends AbstractMenu {
         }
     }
 
+    /**
+     * Allows the patient to schedule a new appointment.
+     * The appointment is associated with the patient's ID.
+     */
     private void scheduleAppointment() {
         String patientID = patient.getPatientID();
         patient.scheduleAppointment(patientID);
     }
 
+    /**
+     * Allows the patient to reschedule an existing appointment.
+     * The new date and time slot are validated before updating.
+     */
     private void rescheduleAppointment() {
         String appointmentID;
 
@@ -184,6 +222,10 @@ public class PatientMenu extends AbstractMenu {
         patient.rescheduleAppointment(appointmentID);
     }
 
+    /**
+     * Allows the patient to cancel an existing appointment.
+     * The appointment's validity is checked before cancellation.
+     */
     private void cancelAppointment() {
         String appointmentID;
 
@@ -203,7 +245,12 @@ public class PatientMenu extends AbstractMenu {
         patient.cancelAppointment(appointmentID);
     }
 
-    // Helper method to validate the appointment ID and its status
+    /**
+     * Checks if the given appointment ID exists and is valid for cancellation.
+     *
+     * @param appointmentID The ID of the appointment to validate
+     * @return true if the appointment exists and can be canceled; false otherwise
+     */
     public boolean isValidAppointmentForCancellation(String appointmentID) {
         String appointmentFile = "resources/Appointment.csv";
 
@@ -225,7 +272,10 @@ public class PatientMenu extends AbstractMenu {
         return false; // Appointment ID is invalid or status is "completed"
     }
 
-
+    /**
+     * Displays the patient's upcoming confirmed appointments.
+     * Retrieves appointment details from the system and displays them.
+     */
     private void viewScheduledAppointments() {
         String patientID = patient.getPatientID();
         String appointmentFile = "resources/Appointment.csv";
@@ -274,7 +324,13 @@ public class PatientMenu extends AbstractMenu {
         }
     }
 
-    // Helper method to retrieve doctor name by doctor ID from User.csv
+    /**
+     * Retrieves the name of a doctor based on their ID from the User.csv file.
+     *
+     * @param doctorID     The unique ID of the doctor
+     * @param userFilePath The file path to the User.csv file
+     * @return The name of the doctor if found; "Unknown Doctor" otherwise
+     */
     private String getDoctorName(String doctorID, String userFilePath) {
         try (BufferedReader userReader = new BufferedReader(new FileReader(userFilePath))) {
             String line = userReader.readLine(); // Skip header line
@@ -303,7 +359,10 @@ public class PatientMenu extends AbstractMenu {
         return "Unknown Doctor"; // Return a default value if the doctor is not found
     }
 
-    // New method to view and manage bills for the patient
+    /**
+     * Displays and manages the patient's bills.
+     * This includes processing and displaying billing details.
+     */
     private void viewBill() {
         Billing billing = new Billing(patient.getPatientID());
         billing.processBilling();

@@ -4,10 +4,23 @@ import enums.DoctorAvailabilityStatus; // Import the enum for availability statu
 import java.io.*;
 import java.util.*;
 
+/**
+ * The DoctorAvailabilityService class implements the DoctorAvailabilityManager interface
+ * and provides methods to manage the availability of doctors in the hospital management system.
+ * It includes functionalities for setting, viewing, and updating doctor availability.
+ */
 public class DoctorAvailabilityService implements DoctorAvailabilityManager {
     private static final String DOCTOR_AVAILABILITY_FILE = "resources/DoctorAvailability.csv";
 
-    // Method to set the availability of a doctor with specified time slots
+    /**
+     * Sets the availability of a doctor with specified time slots.
+     * Each time slot is marked as "Available" in the availability record.
+     *
+     * @param doctorID       The unique ID of the doctor
+     * @param doctorName     The name of the doctor
+     * @param date           The date for which the availability is being set
+     * @param availableSlots An array of time slots during which the doctor is available
+     */
     @Override
     public void setDoctorAvailability(String doctorID, String doctorName, String date, String[] availableSlots) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DOCTOR_AVAILABILITY_FILE, true))) {
@@ -22,7 +35,14 @@ public class DoctorAvailabilityService implements DoctorAvailabilityManager {
         }
     }
 
-    // Method to view available slots for a specific doctor on a specific date
+    /**
+     * Retrieves the available slots for a specific doctor on a given date.
+     * Only slots marked as "Available" are returned.
+     *
+     * @param doctorID The unique ID of the doctor
+     * @param date     The date for which availability is to be viewed
+     * @return An array of formatted strings representing the available slots for the doctor
+     */
     @Override
     public String[] viewDoctorAvailability(String doctorID, String date) {
         List<String> availableSlots = new ArrayList<>();
@@ -42,7 +62,16 @@ public class DoctorAvailabilityService implements DoctorAvailabilityManager {
         return availableSlots.toArray(new String[0]);
     }
 
-    // Method to update the availability status of a specific time slot for a doctor
+    /**
+     * Updates the availability status of a specific time slot for a doctor.
+     * The time slot is marked as "Available" or "Booked" based on the provided status.
+     *
+     * @param doctorID    The unique ID of the doctor
+     * @param doctorName  The name of the doctor
+     * @param date        The date of the time slot
+     * @param timeSlot    The specific time slot to be updated
+     * @param isAvailable A boolean indicating whether the time slot is available (true) or booked (false)
+     */
     public void updateDoctorAvailability(String doctorID, String doctorName, String date, String timeSlot, boolean isAvailable) {
         List<String[]> availabilityData = new ArrayList<>();
 
