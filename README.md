@@ -1,6 +1,7 @@
 # Hospital Management System (HMS)  
 ### SC2002 Object-Oriented Design and Programming Assignment  
-###Nanyang Technological University 
+
+##**Nanyang Technological University **
 ###Lab Group: SCEA Group 1  
 ###Team Members: Navya Singhal,Tanya Irani,Pratham Mehra,Akanksha Mathur,Madhav Agarwal
 ---
