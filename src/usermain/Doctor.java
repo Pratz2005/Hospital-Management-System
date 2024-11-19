@@ -390,6 +390,11 @@ public class Doctor extends User {
      *
      * @param date The date for which appointments are to be viewed
      */
+    /**
+     * Views all confirmed appointments for the doctor on a specific date.
+     *
+     * @param date The date for which appointments are to be viewed
+     */
     public void viewAppointmentsByDate(String date) {
         System.out.println("Confirmed Appointments for Doctor ID: " + doctorID + " on " + date);
 
@@ -400,8 +405,12 @@ public class Doctor extends User {
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
 
-                // Check if the appointment is for this doctor, on the specified date, and confirmed
-                if (fields[1].equals(doctorID) && fields[3].equals(date) && fields[5].equals(AppointmentStatus.CONFIRMED.name())) {
+                // Validate fields length to avoid ArrayIndexOutOfBoundsException
+                if (fields.length >= 6 &&
+                        fields[1].equals(doctorID) &&
+                        fields[3].equals(date) &&
+                        fields[5].equals(AppointmentStatus.CONFIRMED.name())) {
+
                     hasAppointments = true;
                     System.out.println("Appointment ID: " + fields[0]);
                     System.out.println("Patient ID: " + fields[2]);
