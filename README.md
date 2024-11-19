@@ -2,6 +2,7 @@
 ### SC2002 Object-Oriented Design and Programming Assignment  
 <sub>Nanyang Technological University</sub>  
 <sub>Lab Group: SCEA Group 1</sub>  
+<sub>Team Members: Navya Singhal,Tanya Irani,Pratham Mehra,Akanksha Mathur,Madhav Agarwal</sub>  
 ---
 
 ## **Introduction**  
