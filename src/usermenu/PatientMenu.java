@@ -209,7 +209,7 @@ public class PatientMenu extends AbstractMenu {
         String appointmentID;
 
         while (true) {
-            System.out.print("Enter Appointment ID to cancel: ");
+            System.out.print("Enter Appointment ID to reschedule: ");
             appointmentID = sc.nextLine();
 
             // Check if the appointment ID exists and the status is not "completed"
