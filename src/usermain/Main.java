@@ -61,6 +61,10 @@ public class Main {
                                 newPassword = sc.nextLine();
                                 System.out.print("Confirm new password: ");
                                 confirmPassword = sc.nextLine();
+                                if (newPassword.isEmpty()) {
+                                    System.out.println("Password cannot be empty. Please try again.");
+                                    continue; // Restart the loop to ask for a valid password
+                                }
 
                                 if (newPassword.equals(confirmPassword)) {
                                     updatePasswordInCSV(filePath, patientFilePath, id, newPassword);
