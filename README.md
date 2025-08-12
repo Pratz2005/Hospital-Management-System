@@ -1,14 +1,8 @@
 # Hospital Management System (HMS)  
-### SC2002 Object-Oriented Design and Programming Assignment  
-<sub>Nanyang Technological University</sub>  
-<sub>Lab Group: SCEA Group 1</sub>  
-<sub>Team Members: Navya Singhal,Tanya Irani,Pratham Mehra,Akanksha Mathur,Madhav Agarwal</sub>  
 ---
 
 ## **Introduction**  
 The Hospital Management System (HMS) is designed to streamline hospital operations by managing roles such as Doctors, Pharmacists, Patients, and Administrators. It automates tasks like appointment scheduling, inventory management, and billing while adhering to Object-Oriented Programming (OOP) principles and SOLID design principles.
-
-Link to JavaDoc: https://madhav-byte-debug.github.io/SC2002-Project/ 
 
 The architecture ensures modularity and scalability through high-level and low-level packages, reducing dependencies and enhancing maintainability.  
 ---
@@ -100,9 +94,3 @@ This modular design ensures minimal impact of changes and promotes scalability.
 6. Input validation prompts users to re-enter invalid inputs.  
 7. Employee ages are restricted to 18–100 years.  
 
----
-
-**Submitted by**:  
-SCEA Group 1  
-Nanyang Technological University  
-SC2002 Object-Oriented Design and Programming  
